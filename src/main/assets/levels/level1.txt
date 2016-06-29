@@ -1,0 +1,11 @@
+theme=1
+setsize=5
+lurespartone=2
+nonlurespartone=3
+choices=3
+responsechoice=[0, 0, 0]
+presentationtime=2
+presentationlimit=5
+repetitions=3
+goup=1
+godown=2

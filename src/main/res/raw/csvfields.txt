@@ -1,0 +1,18 @@
+OS
+version
+subject
+session
+level
+theme
+setsize
+presentation nonlures
+presentation lures
+response nonlures
+response lures
+stimuli presented
+stimuli choice
+presentation_time_per_stimulus
+presentation_time_first_part
+presentation_limit_second_part
+reactiontime
+accuracy

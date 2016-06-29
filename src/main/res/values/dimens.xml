@@ -1,0 +1,32 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="font_size_tiny">10sp</dimen>
+    <dimen name="font_size_medium">25sp</dimen>
+    <dimen name="font_size_mediumlarge">40sp</dimen>
+    <dimen name="font_size_large">50sp</dimen>
+    <dimen name="font_size_huge">100sp</dimen>
+    <!--<dimen name="font_size_huger">100sp</dimen>-->
+
+    <dimen name="gap_tiny">10dp</dimen>
+    <dimen name="gap_medium">25dp</dimen>
+    <dimen name="gap_mediumlarge">40dp</dimen>
+    <dimen name="gap_large">50dp</dimen>
+    <dimen name="gap_larger">100dp</dimen>
+    <dimen name="gap_huge">160dp</dimen>
+
+    <dimen name="feedback_phrase_maxwidth">900dp</dimen>
+    <!--<dimen name="feedback_paddingtop">200dp</dimen>-->
+
+    <dimen name="seekbar_width">900dp</dimen>
+    <dimen name="seekbar_padding_width">150dp</dimen>
+    <dimen name="seekbar_thick">2dip</dimen>
+    <!--<dimen name="seekbar_thick_min">2dip</dimen>-->
+    <!--<dimen name="seekbar_thick_max">10dip</dimen>-->
+
+    <dimen name="seekbar_label_width">600dp</dimen> <!-- seekbar_width - 2 * seekbar_padding_width -->
+    <dimen name="seekbar_label_margin_height">109dp</dimen>
+</resources>

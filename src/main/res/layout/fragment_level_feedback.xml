@@ -1,0 +1,40 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.LevelFeedback">
+
+    <TextView
+        android:id="@+id/tvFeedbackPhrase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|top"
+        android:layout_marginTop="@dimen/gap_large"
+        android:maxWidth="@dimen/feedback_phrase_maxwidth"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_mediumlarge"
+        android:text="Level Complete feedback"/>
+
+    <ImageView
+        android:id="@+id/ivFeedback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/ivLevelFeedbackNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/next" />
+
+    <ImageView
+        android:id="@+id/ivDemoQuit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:src="@drawable/exitdemo" />
+
+</FrameLayout>
