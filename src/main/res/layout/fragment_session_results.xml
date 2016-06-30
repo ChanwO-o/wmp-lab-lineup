@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.uci.wmp.lineup.fragments.SessionResults">
+
+    <TextView
+        android:id="@+id/tvGreatJob"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Great job!"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_mediumlarge"
+        android:textStyle="bold" />
+
+    <!--<TextView-->
+        <!--android:id="@+id/tvResults"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/tvGreatJob"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="You earned x points!"-->
+        <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textSize="@dimen/font_size_mediumlarge"-->
+        <!--android:textStyle="bold" />-->
+
+    <ImageView
+        android:id="@+id/ivBackToMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="18dp"
+        android:contentDescription="@string/desc"
+        android:src="@drawable/done" />
+
+</RelativeLayout>

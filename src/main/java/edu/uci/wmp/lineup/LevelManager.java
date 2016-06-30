@@ -155,6 +155,8 @@ public class LevelManager {
 
         sessionStartMills = SystemClock.uptimeMillis(); // record session starting time (used for trainingmode = "time")
         round = 0;
+        roundsPlayed = 0;
+        levelsPlayed = 0;
         testStarted = true;
         points = 0; // reset score
 //        CSVWriter.getInstance().createCsvFile();
@@ -165,6 +167,7 @@ public class LevelManager {
      */
     public void startLevel() {
         round = 1;
+        wrongs = 0;
         levelAccuracy.clear();
     }
 
@@ -361,9 +364,29 @@ public class LevelManager {
         int finishIndex = array.indexOf(']');
         String[] arrayContents = array.substring(startIndex + 1, finishIndex).split(",");
 
-        for (int i = 0; i < arrayContents.length; ++i)
-            result[i] = Integer.valueOf(arrayContents[i].trim());
+        // check for RANDOM_CODE in arrayContents
+        // if yes generate random classes, if not fill array with given contents
+        if (arrayContents.length == 1 &&
+                arrayContents[0].equals(String.valueOf(StimuliManager.RANDOM_CODE))) // responsechoices == [3]
+        {
+            for (int i = 0; i < choices; ++i)
+                result[i] = random.nextInt(StimuliManager.DISTRACTOR_CODE + 1);
 
+        }
+        else {
+            for (int i = 0; i < arrayContents.length; ++i)
+                result[i] = Integer.valueOf(arrayContents[i].trim());
+        }
+        /*
+         * This is the solution for if 3's aren't always stored alone as responsechoice.
+         * e.g. [0, 1, 3] is legal.
+         *
+        // change all 'RANDOM_CODE's in responsechoice to random TARGET, LURE, or DISTRACTOR CODES
+        // the switch case below will process the random case as one of the three classes
+        for (int i = 0; i < responsechoice.length; ++i) {
+            if (responsechoice[i] == StimuliManager.RANDOM_CODE)
+                responsechoice[i] = random.nextInt(StimuliManager.DISTRACTOR_CODE + 1);
+        } */
         return result;
     }
 
@@ -447,7 +470,6 @@ public class LevelManager {
         // finally, fill secondPartSequence
         for (int code : responsechoice)
         {
-            Log.wtf("code", "" + code);
             switch (code) {
                 case StimuliManager.TARGET_CODE:
                     Log.wtf("code", "target");
@@ -464,9 +486,12 @@ public class LevelManager {
                     secondPartSequence.add(Util.chooseRandomFromIterable(secondPartPotentialDistractors, secondPartPotentialDistractors.size(), true));
                     break;
 
-                case StimuliManager.RANDOM_CODE:
-
-                    break;
+//                case StimuliManager.RANDOM_CODE: // this case has been covered above
+//                    List<Integer> dumpAllPotentials = new ArrayList<>(secondPartPotentialTargets); // temporary store all
+//                    dumpAllPotentials.addAll(secondPartPotentialLures);
+//                    dumpAllPotentials.addAll(secondPartPotentialDistractors);
+//                    secondPartSequence.add(Util.chooseRandomFromIterable(dumpAllPotentials, dumpAllPotentials.size(), false));
+//                    break;
             }
         }
     }

@@ -29,7 +29,6 @@ public class Stage2 extends Fragment {
     final double CHOICE_BUTTON_WIDTH = 0.17;
     final double CHOICE_BUTTON_HEIGHT = 0.2;
     final double CHOICE_BUTTON_MARGIN = 0.05;
-    final double CHOICE_BUTTON_PADDING = 0.01;
 
     public Stage2() {
         // Required empty public constructor
@@ -59,6 +58,10 @@ public class Stage2 extends Fragment {
         return view;
     }
 
+    /**
+     * Fills center layout with rows of buttons, using correct number of rows given number of stimuli for the round.
+     * Given constant BUTTONS_PER_ROW, the remainder is calculated which tells the number of buttons in the last row.
+     */
     private void fillButtons() throws IOException
     {
         int numberOfButtons = LevelManager.getInstance().secondPartSequence.size() + 1;
@@ -93,6 +96,10 @@ public class Stage2 extends Fragment {
         }
     }
 
+    /**
+     * Return ImageButton with corresponding stimulus.
+     * Unless imageLabel == BLANK_BUTTON_TAG, cuz that obviously leaves the button blank.
+     */
     private ImageButton createImageButton(int imageLabel, LinearLayout.LayoutParams layoutParams) throws IOException {
         ImageButton choiceButton = new ImageButton(getActivity());
         choiceButton.setScaleType(ImageView.ScaleType.FIT_CENTER);

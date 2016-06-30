@@ -89,7 +89,6 @@ public class RoundFeedback extends Fragment {
                 break;
             }
         }
-
         return (response == Stage2.BLANK_BUTTON_TAG && !inSequence) || (response != Stage2.BLANK_BUTTON_TAG && inSequence); // what if player clicks a lure? wrong.
     }
 

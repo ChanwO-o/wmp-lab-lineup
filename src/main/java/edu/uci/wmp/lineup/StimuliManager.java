@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.uci.wmp.lineup.fragments.LevelFeedback;
+
 public class StimuliManager {
 
     private static final StimuliManager INSTANCE = new StimuliManager();
@@ -24,8 +26,8 @@ public class StimuliManager {
     public static final int UPDOWN = 1;
     public static final int RIGHTUP = 0;
     public static final int NOANSWER = -1;
-    public static final int CORRECT = 1;    // TODO: change to boolean
-    public static final int INCORRECT = 0;
+    public static final int CORRECT = 1;
+    public static final int INCORRECT = -1;
     public static final String TARGET = "list1/";
     public static final String SEMANTIC = "list2/";
     public static final String PERCEPTUAL = "list3/";
@@ -75,11 +77,22 @@ public class StimuliManager {
 
     public Bitmap getFeedbackAsset(Context context, int result) throws IOException {
         AssetManager assetManager = context.getAssets();
-        InputStream is;
-        if (result == CORRECT)
-            is = assetManager.open("stimuli/" + MISC + "correct.png");
-        else
-            is = assetManager.open("stimuli/" + MISC + "incorrect.png");
+        InputStream is = null;
+        switch (result) {
+            case CORRECT:
+            case LevelFeedback.LEVEL_UP:
+                is = assetManager.open("stimuli/" + MISC + "correct.png");
+                break;
+
+            case LevelFeedback.LEVEL_SAME:
+                is = assetManager.open("stimuli/" + MISC + "neutral.png");
+                break;
+
+            case INCORRECT:
+            case LevelFeedback.LEVEL_DOWN:
+                is = assetManager.open("stimuli/" + MISC + "incorrect.png");
+                break;
+        }
         return BitmapFactory.decodeStream(is);
     }
 

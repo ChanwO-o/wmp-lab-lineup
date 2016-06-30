@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.uci.wmp.lineup.fragments.ReflectionQuestion">
+
+    <TextView
+        android:id="@+id/tvReflQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/gap_mediumlarge"
+        android:gravity="center_vertical"
+        android:text="@string/enjoyed"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_mediumlarge" />
+
+    <LinearLayout
+        android:id="@+id/llFaces"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/vLine"
+        android:layout_width="fill_parent"
+        android:layout_above="@+id/tvTapFace"
+        android:layout_height="1dp"
+        android:background="#ffffff" />
+
+    <TextView
+        android:id="@+id/tvTapFace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/white"
+        android:text="@string/tap_face"
+        android:textSize="@dimen/font_size_mediumlarge"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

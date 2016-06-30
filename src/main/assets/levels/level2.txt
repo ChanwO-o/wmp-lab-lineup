@@ -1,11 +1,11 @@
 theme=1
 setsize=3
 lurespartone=0
-nonluresspartone=3
+nonlurespartone=3
 choices=2
-responsechoice=0
+responsechoice=[0,1]
 presentationtime=2
-presentationlimit=0
+presentationlimit=5
 repetitions=3
 goup=1
 godown=3
