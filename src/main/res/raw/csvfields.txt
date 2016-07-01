@@ -5,14 +5,12 @@ session
 level
 theme
 setsize
-presentation nonlures
-presentation lures
-response nonlures
-response lures
+part1 nonlures
+part1 lures
 stimuli presented
-stimuli choice
-presentation_time_per_stimulus
-presentation_time_first_part
-presentation_limit_second_part
+response choices
+presentation time per stimulus
+presentation time part1
+presentation time part2
 reactiontime
 accuracy

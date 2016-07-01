@@ -2,6 +2,8 @@ package edu.uci.wmp.lineup.fragments;
 
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import edu.uci.wmp.lineup.CSVWriter;
 import edu.uci.wmp.lineup.LevelManager;
 import edu.uci.wmp.lineup.R;
 import edu.uci.wmp.lineup.StimuliManager;
@@ -29,6 +32,28 @@ public class Stage2 extends Fragment {
     final double CHOICE_BUTTON_WIDTH = 0.17;
     final double CHOICE_BUTTON_HEIGHT = 0.2;
     final double CHOICE_BUTTON_MARGIN = 0.05;
+    public static final int NOANSWER = -1;
+    long stageStartTime;
+
+    private Handler handler = new Handler();
+
+    private Runnable presentationLimit = new Runnable() {
+        @Override
+        public void run() {
+            long timeInMills = SystemClock.uptimeMillis() - stageStartTime;
+            int seconds = (int) timeInMills / 1000;
+
+            if (seconds >= LevelManager.getInstance().choicetimelimit) // TIME UP!
+            {
+                LevelManager.getInstance().response = NOANSWER; // submit no answer
+                LevelManager.getInstance().reactionTime = (long) NOANSWER;
+                CSVWriter.getInstance().collectData();
+                Util.loadFragment(getActivity(), new RoundFeedback());
+            } else {
+                handler.postDelayed(this, 0); // loop until button is visible
+            }
+        }
+    };
 
     public Stage2() {
         // Required empty public constructor
@@ -38,6 +63,7 @@ public class Stage2 extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LevelManager.getInstance().generateStimuliSecondPart();
+        stageStartTime = SystemClock.uptimeMillis();
     }
 
     @Override
@@ -55,7 +81,14 @@ public class Stage2 extends Fragment {
             e.printStackTrace();
         }
         toggleDebug(LevelManager.getInstance().debug);
+        handler.postDelayed(presentationLimit, 0);
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        handler.removeCallbacks(presentationLimit);
+        super.onPause();
     }
 
     /**
@@ -111,7 +144,9 @@ public class Stage2 extends Fragment {
         choiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LevelManager.getInstance().responses.add((int) view.getTag()); // submit answer
+                LevelManager.getInstance().response = (int) view.getTag(); // submit answer
+                LevelManager.getInstance().reactionTime = SystemClock.uptimeMillis() - stageStartTime;
+                CSVWriter.getInstance().collectData();
                 Util.loadFragment(getActivity(), new RoundFeedback());
             }
         });

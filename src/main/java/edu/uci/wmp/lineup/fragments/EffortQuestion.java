@@ -122,8 +122,8 @@ public class EffortQuestion extends Fragment {
                     responseStartTime = SystemClock.uptimeMillis();
                     responded = true;
 
-//                    CSVWriter.getInstance().collectQuestionResponse(tvQuestion.getText().toString(), seekBar.getProgress());
-//                    CSVWriter.getInstance().writeQuestionResponse();
+                    CSVWriter.getInstance().collectQuestionResponse(tvQuestion.getText().toString(), seekBar.getProgress());
+                    CSVWriter.getInstance().writeQuestionResponse();
 
                     if (questionNum == 1) {
                         handler.postDelayed(response, 0);

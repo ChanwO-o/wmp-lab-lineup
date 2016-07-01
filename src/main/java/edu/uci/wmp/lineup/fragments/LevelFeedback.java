@@ -112,7 +112,7 @@ public class LevelFeedback extends Fragment implements View.OnClickListener {
     private void calculateNextLevel() throws IOException {
         if (LevelManager.getInstance().wrongs <= LevelManager.getInstance().goup) {
             Log.wtf("LEVEL_UP", "++");
-            LevelManager.getInstance().level++;
+            LevelManager.getInstance().level++; //TODO: SETUP LIMITS
             flLevelFeedback.addView(getFace(LEVEL_UP));
             tvFeedbackPhrase.setText("Level up");
         }
@@ -123,7 +123,7 @@ public class LevelFeedback extends Fragment implements View.OnClickListener {
         }
         else {
             Log.wtf("LEVEL_DOWN", "--");
-            LevelManager.getInstance().level--;
+            LevelManager.getInstance().level--; //TODO: SETUP LIMITS
             flLevelFeedback.addView(getFace(LEVEL_DOWN));
             tvFeedbackPhrase.setText("Level down");
         }

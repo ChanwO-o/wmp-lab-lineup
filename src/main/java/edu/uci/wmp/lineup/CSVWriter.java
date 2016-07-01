@@ -1,18 +1,20 @@
 package edu.uci.wmp.lineup;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class CSVWriter {
-    public static final CSVWriter INSTANCE = new CSVWriter();
+    private static final CSVWriter INSTANCE = new CSVWriter();
 
     private static final String[] ignoreFields = {};
-    private static final String FOLDERPATH = "/wmplab/LineUp/csvdata";
+    private static final String FOLDER_PATH = "/wmplab/LineUp/csvdata";
     private static final String COMMA = ", ";
     private static final String NEW_LINE = "\n ";
     private static final String NULL = "na ";
@@ -42,7 +44,7 @@ public class CSVWriter {
      */
     public void createCsvFile() {
         File root = android.os.Environment.getExternalStorageDirectory();
-        File csvFolder = new File (root.getAbsolutePath() + FOLDERPATH);
+        File csvFolder = new File (root.getAbsolutePath() + FOLDER_PATH);
         if (!csvFolder.exists())
             Log.i("createCsvFile()", "CSV folder created " + csvFolder.mkdirs());
 
@@ -116,59 +118,37 @@ public class CSVWriter {
     }
 
     public void collectData() {
-////        if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_DEMO)) // demo mode does not output a data file
-////            return;
-//        int curInd = LevelManager.getInstance().currentStimuliIndex;
-//        StringBuilder data = new StringBuilder();
-//
-//        data.append(Build.VERSION.RELEASE).append(COMMA);                                                               // OS
-//        data.append(BuildConfig.VERSION_NAME).append(COMMA);                                                            // version name
-//
-//        if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_DEMO))                             // should not write subject id on demo mode
-//            data.append("DEMO").append(COMMA);
-//        else
-//            data.append(LevelManager.getInstance().subject).append(COMMA);
-//
-//        data.append(LevelManager.getInstance().session).append(COMMA);
-//        data.append(LevelManager.getInstance().level).append(COMMA);
-//        data.append(LevelManager.getInstance().round).append(COMMA);
-//        data.append(LevelManager.getInstance().part).append(COMMA);
-//        data.append(StimuliManager.getImagePath(LevelManager.getInstance().stimulisequence.get(curInd))).append(COMMA); // stimulus
-//        data.append(LevelManager.getInstance().stimulisequence.get(curInd) / 100).append(COMMA);                        // stimulus class
-//        data.append(LevelManager.getInstance().presentationstyle.get(curInd)).append(COMMA);                            // presentation style
-//
-//        if (LevelManager.getInstance().part == LevelManager.STAGE1)                                                     // 1. overall acc
-//            data.append(LevelManager.getInstance().accuracyfirstpart.get(curInd)).append(COMMA); // accuracy stage1
-//        else if (LevelManager.getInstance().part == LevelManager.STAGE2)
-//            data.append(LevelManager.getInstance().accuracysecondpart.get(curInd)).append(COMMA); // accuracy stage2
-//
-//        if (LevelManager.getInstance().part == LevelManager.STAGE1)                                                     // 2. stage1 & stage2 individual acc (fills two columns)
-//            data.append(LevelManager.getInstance().accuracyfirstpart.get(curInd)).append(COMMA).append(NULL).append(COMMA);
-//        else if (LevelManager.getInstance().part == LevelManager.STAGE2)
-//            data.append(NULL).append(COMMA).append(LevelManager.getInstance().accuracysecondpart.get(curInd)).append(COMMA);
-//
-//        double seconds = 0;                                                                                             // reaction time (rt)
-//        if (LevelManager.getInstance().part == LevelManager.STAGE1)
-//            seconds = (double) (LevelManager.getInstance().rtfirstpart.get(curInd)) / 1000;
-//        else if (LevelManager.getInstance().part == LevelManager.STAGE2)
-//            seconds = (double) (LevelManager.getInstance().rtsecondpart.get(curInd)) / 1000;
-//        data.append(seconds).append(COMMA);
-//
-//        data.append(Util.getTimestamp(TIMESTAMP_DATE, TIMESTAMP_TIME)).append(COMMA);                                   // timestamp
-//
-//        data.append(LevelManager.getInstance().trainingmode).append(COMMA);
-//
-//        if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_ROUNDS))                           // sessionlength & numberofrounds
-//            data.append(NULL).append(COMMA).append(LevelManager.getInstance().numberoftrials).append(COMMA);
-//        else if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_TIME))
-//            data.append(LevelManager.getInstance().sessionLength).append(COMMA).append(NULL).append(COMMA);
-//
-//
-//        data.append(LevelManager.getInstance().setsize).append(COMMA);             // not sure
-//        data.append(LevelManager.getInstance().distractorsize).append(COMMA);
-//
-//        data.append(NEW_LINE);
-//        writeLine(data.toString());
+//        if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_DEMO)) // demo mode does not output a data file
+//            return;
+        StringBuilder data = new StringBuilder();
+
+        data.append(Build.VERSION.RELEASE).append(COMMA);                                                               // OS
+        data.append(BuildConfig.VERSION_NAME).append(COMMA);                                                            // version name
+
+        if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_DEMO))                             // should not write subject id on demo mode
+            data.append("DEMO").append(COMMA);
+        else
+            data.append(LevelManager.getInstance().subject).append(COMMA);
+
+        data.append(LevelManager.getInstance().session).append(COMMA);
+        data.append(LevelManager.getInstance().level).append(COMMA);
+        data.append(LevelManager.getInstance().theme).append(COMMA);
+        data.append(LevelManager.getInstance().setsize).append(COMMA);
+        data.append(LevelManager.getInstance().nonlurespartone).append(COMMA);
+        data.append(LevelManager.getInstance().lurespartone).append(COMMA);
+        data.append(Util.iterableToString(LevelManager.getInstance().stimuliSequence)).append(COMMA);
+        String classes = "";
+        for (int i : LevelManager.getInstance().responsechoice)
+            classes += (i + " ");
+        data.append(classes).append(COMMA);
+        data.append(LevelManager.getInstance().presentationtimeperstimulus).append(COMMA);
+        data.append(LevelManager.getInstance().presentationtimeperstimulus * LevelManager.getInstance().setsize).append(COMMA);
+        data.append(LevelManager.getInstance().choicetimelimit).append(COMMA);
+        data.append(LevelManager.getInstance().reactionTime).append(COMMA);
+        data.append(LevelManager.getInstance().accuracy).append(COMMA);
+
+        data.append(NEW_LINE);
+        writeLine(data.toString());
     }
 
     /**
@@ -176,7 +156,8 @@ public class CSVWriter {
      */
     public void collectQuestionResponse(String theQuestion, int resp) {
         questionResponses
-                .append("CST").append(COMMA)
+                .append(Build.VERSION.RELEASE).append(COMMA)
+                .append(BuildConfig.VERSION_NAME).append(COMMA)
                 .append(LevelManager.getInstance().subject).append(COMMA)
                 .append(LevelManager.getInstance().session).append(COMMA)
                 .append(theQuestion).append(COMMA)

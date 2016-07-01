@@ -19,10 +19,13 @@ import edu.uci.wmp.lineup.Util;
 
 public class GetReady extends Fragment implements View.OnClickListener {
 
+    TextView tvGetReady;
     TextView tvLevelRoundDebug;
     ImageView ivReadyNext;
-    final int READY_SHOW_BUTTON_TIME = 1;     // when to show next button in seconds
+    final int READY_SHOW_BUTTON_TIME = 1; // when to show next button in seconds
+    final long BLANK_SCREEN = 500; // showing blank screen in milliseconds
     long readyStartTime;
+    long startBlankScreenTime;
 
     private Handler handler = new Handler();
 
@@ -36,6 +39,23 @@ public class GetReady extends Fragment implements View.OnClickListener {
                 ivReadyNext.setVisibility(View.VISIBLE);
             } else {
                 handler.postDelayed(this, 0); // loop until button is visible
+            }
+        }
+    };
+
+    /**
+     * Once player clicks Next, display a blank screen for BLANK_SCREEN milliseconds
+     */
+    private Runnable blankScreen = new Runnable() {
+        @Override
+        public void run() {
+            long timeInMills = SystemClock.uptimeMillis() - startBlankScreenTime;
+            if (timeInMills >= BLANK_SCREEN)
+                Util.loadFragment(getActivity(), new Stage1());
+            else {
+                tvGetReady.setVisibility(View.INVISIBLE);
+                ivReadyNext.setVisibility(View.INVISIBLE);
+                handler.postDelayed(this, 0);
             }
         }
     };
@@ -59,7 +79,7 @@ public class GetReady extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_get_ready, container, false);
-        TextView tvGetReady = (TextView) view.findViewById(R.id.tvGetReady);
+        tvGetReady = (TextView) view.findViewById(R.id.tvGetReady);
         tvLevelRoundDebug = (TextView) view.findViewById(R.id.tvLevelRoundDebug);
         ivReadyNext = (ImageView) view.findViewById(R.id.ivReadyGo);
 
@@ -68,8 +88,6 @@ public class GetReady extends Fragment implements View.OnClickListener {
 
         ivReadyNext.setVisibility(View.GONE); // hide button for 1 second
         ivReadyNext.setOnClickListener(this);
-
-//        LevelManager.getInstance().round++; // one trial completed TODO: move this statement to screen that marks the 'end' of the round, not the start.
 
         toggleDebug(LevelManager.getInstance().debug);
         handler.postDelayed(showButton, 0);
@@ -92,7 +110,8 @@ public class GetReady extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Util.loadFragment(getActivity(), new Stage1());
+        startBlankScreenTime = SystemClock.uptimeMillis();
+        handler.postDelayed(blankScreen, 0);
     }
 
 }

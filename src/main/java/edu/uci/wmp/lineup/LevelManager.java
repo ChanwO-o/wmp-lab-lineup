@@ -28,7 +28,7 @@ public class LevelManager {
 
     /** Constants */
     public static final int MIN_LEVEL = 1;
-    public static final int MAX_LEVEL = 30;
+    public static final int MAX_LEVEL = 10;
     public static final int START_LEVEL = 1;
     public static final int DEMO_MAX_LEVELS = 3;            // demo mode plays only 3 levels
     public static final int STAGE1 = 1;                     // stage 1
@@ -75,8 +75,9 @@ public class LevelManager {
     public int nonlurespartone = 0;
     public int choices = 0;
     public int[] responsechoice = {};
-    public int presentationtime = 5;                            // time limit for displaying stimuli in stage 1
-    public int presentationlimit = 5;                           // time limit for player to answer
+    public long presentationtimeperstimulus = 750;              // display time in mills per stimulus
+//    public int presentationtime = 5;                            // seconds stimuli is displayed in stage 1 -- interpreted by presentationTimePerStimulus * setsize
+    public int choicetimelimit = 7;                             // seconds for player to answer in stage 2
 
     // Part I
     public List<Integer> stimuliSequence;                       // defines what stimuli have to be shown
@@ -88,9 +89,9 @@ public class LevelManager {
     public List<Integer> secondPartPotentialTargets;            // collection of all possible target stimuli candidates (exactly same as presented)
     public List<Integer> secondPartPotentialLures;              // collection of all possible lure stimuli candidates (same shape, different color)
     public List<Integer> secondPartPotentialDistractors;        // collection of all possible distractor stimuli candidates (new shape, can have same color)
-    public List<Integer> responses;                             // record of labels of buttons the player has clicked
-    public List<Long> reactionTime;                             // reaction times of clicks
-    public List<Integer> levelAccuracy;                         // correct or incorrect answers for the level
+    public int response;                                       // label of button the player has clicked
+    public long reactionTime;                                   // reaction times of click
+    public int accuracy;                                        // correct or incorrect answer for the level
 
     // -------------------------------------------------------------------------------------------
 
@@ -126,9 +127,6 @@ public class LevelManager {
         secondPartPotentialTargets = new ArrayList<>();
         secondPartPotentialLures = new ArrayList<>();
         secondPartPotentialDistractors = new ArrayList<>();
-        responses = new ArrayList<>();
-        reactionTime = new ArrayList<>();
-        levelAccuracy = new ArrayList<>();
     }
 
     /**
@@ -142,9 +140,6 @@ public class LevelManager {
         secondPartPotentialTargets.clear();
         secondPartPotentialLures.clear();
         secondPartPotentialDistractors.clear();
-        responses.clear();
-        reactionTime.clear();
-        levelAccuracy.clear();
 
         if (trainingmode.equals(TRAININGMODE_DEMO)) {
             loadLevel(START_LEVEL);
@@ -159,7 +154,7 @@ public class LevelManager {
         levelsPlayed = 0;
         testStarted = true;
         points = 0; // reset score
-//        CSVWriter.getInstance().createCsvFile();
+        CSVWriter.getInstance().createCsvFile();
     }
 
     /**
@@ -168,7 +163,7 @@ public class LevelManager {
     public void startLevel() {
         round = 1;
         wrongs = 0;
-        levelAccuracy.clear();
+        // TODO: reset variables numberOfSetsInTheme and numberOfPicturesInSet here for the current level's theme
     }
 
     /**
@@ -324,7 +319,7 @@ public class LevelManager {
      */
     private void setLevelVariable(String varName, String newValue) throws NoSuchFieldException, IllegalAccessException {
 
-        if (CSVWriter.getInstance().canIgnore(varName)) // if (varName.equals("showinfullscreen") || varName.equals("abortallowed"))
+        if (CSVWriter.getInstance().canIgnore(varName)) // ignore certain fields in level file
             return;
 
         Field var = this.getClass().getDeclaredField(varName);

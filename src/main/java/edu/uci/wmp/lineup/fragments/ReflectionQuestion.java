@@ -131,8 +131,8 @@ public class ReflectionQuestion extends Fragment {
                     int greenLabel = id + 10 * id % 100; // set face green
                     setFace((ImageView) v, greenLabel);
 
-//                    CSVWriter.getInstance().collectQuestionResponse(tvQuestion.getText().toString(), (int) v.getTag() % 100);
-//                    CSVWriter.getInstance().writeQuestionResponse();
+                    CSVWriter.getInstance().collectQuestionResponse(tvQuestion.getText().toString(), (int) v.getTag() % 100);
+                    CSVWriter.getInstance().writeQuestionResponse();
 
                     responded = true;
                     faceClickedID = (int) v.getTag() - 1;// - StimuliManager.FACE_LABEL - 1;

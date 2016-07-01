@@ -16,7 +16,4 @@
     <string name="did_well">I think I did pretty well in this task.</string>
     <string name="tap_face">Tap a face to continue</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
 </resources>

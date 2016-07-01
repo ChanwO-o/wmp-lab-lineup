@@ -16,12 +16,9 @@ import java.util.Set;
 public class Checks {
     private static final Checks INSTANCE = new Checks();
 
-    public final String LEVELFOLDER_PATH = "/wmplab/LineUp/levels/";
-    public final String STIMULIFOLDER_PATH = "/wmplab/LineUp/stimuli/";
-    public final String STIMULI_LIST1_PATH = "/wmplab/LineUp/stimuli/list1/";
-    public final String STIMULI_LIST2_PATH = "/wmplab/LineUp/stimuli/list2/";
-    public final String STIMULI_LIST3_PATH = "/wmplab/LineUp/stimuli/list3/";
-    public final String STIMULI_DIST_PATH = "/wmplab/LineUp/stimuli/distractors/";
+    public static final String LEVELFOLDER_PATH = "/wmplab/LineUp/levels/";
+    public static final String STIMULIFOLDER_PATH = "/wmplab/LineUp/stimuli/";
+    public static final String STIMULI_THEME1_PATH = "/wmplab/LineUp/stimuli/geometry/";
 
     private StringBuilder errorMessages = new StringBuilder();
     private Context context;
@@ -123,11 +120,11 @@ public class Checks {
     public void checkStimuliDirectory() throws InvalidStimuliFilesException {
         File root = android.os.Environment.getExternalStorageDirectory();
         File outStimuliFolder = new File(root.getAbsolutePath() + STIMULIFOLDER_PATH);
-        File list1Folder = new File(root.getAbsolutePath() + STIMULI_LIST1_PATH);
-        File list2Folder = new File(root.getAbsolutePath() + STIMULI_LIST2_PATH);
-        File list3Folder = new File(root.getAbsolutePath() + STIMULI_LIST3_PATH);
-        File distFolder = new File(root.getAbsolutePath() + STIMULI_DIST_PATH);
-        File[] stimFolders = new File[] {list1Folder, list2Folder, list3Folder, distFolder};
+        File list1Folder = new File(root.getAbsolutePath() + STIMULI_THEME1_PATH);
+//        File list2Folder = new File(root.getAbsolutePath() + STIMULI_LIST2_PATH);
+//        File list3Folder = new File(root.getAbsolutePath() + STIMULI_LIST3_PATH);
+//        File distFolder = new File(root.getAbsolutePath() + STIMULI_DIST_PATH);
+        File[] stimFolders = new File[] {list1Folder}; //, list2Folder, list3Folder, distFolder};
 
         if (!outStimuliFolder.exists()) { // no dir; don't bother looking through stimuli files
             Log.e("checkStimuliDirectory()", "Stimuli Folder does not exist");
@@ -181,17 +178,20 @@ public class Checks {
 
     public void populateStimuliDirectory() throws InvalidStimuliFilesException {
         File root = android.os.Environment.getExternalStorageDirectory();
-        String outStimuliFolderPath = root.getAbsolutePath() + STIMULIFOLDER_PATH;
+        String outStimuliFolderPath = root.getAbsolutePath() + STIMULI_THEME1_PATH;
         File outStimuliFolder = new File(outStimuliFolderPath);
         outStimuliFolder.mkdirs();
 
         try {
-            String[] destinations = new String[] { StimuliManager.TARGET, StimuliManager.SEMANTIC, StimuliManager.PERCEPTUAL, StimuliManager.DISTRACTOR };
+            String[] destinations = new String[8];
+            for (int i = 1; i <= 8; ++i) { // TODO: use constant here for numberofsets in theme
+                destinations[i - 1] = "geometry/set " + i;
+            }
             for (String dest : destinations) {
                 String newOutStimuliFolderPath = outStimuliFolderPath + dest;
                 outStimuliFolder = new File(newOutStimuliFolderPath);
                 outStimuliFolder.mkdir();
-                copyDirectory("stimuli/" + dest, newOutStimuliFolderPath);
+                copyDirectory("stimuli/" + dest + "/", newOutStimuliFolderPath);
             }
         }
         catch (IOException e) { e.printStackTrace(); throw new InvalidStimuliFilesException(); }
@@ -199,12 +199,13 @@ public class Checks {
 
     private void copyDirectory(String assetFolderPath, String outFolderPath) throws IOException {
         Log.i("copyDirectory()", assetFolderPath + " -> " + outFolderPath);
-        String trimmedAssetFolderPath = assetFolderPath.substring(0, assetFolderPath.length() - 1);
+//        String trimmedAssetFolderPath = assetFolderPath.substring(0, assetFolderPath.length() - 1);
+//        Log.i("copyDirectory()", "trimmedAssetFolderPath " + trimmedAssetFolderPath);
         AssetManager am = context.getAssets();
         InputStream in;
         OutputStream out;
 
-        for (String filename : am.list(trimmedAssetFolderPath)) {
+        for (String filename : am.list(assetFolderPath)) {
             Log.d("reading asset", filename);
             in = am.open(assetFolderPath + filename);
             File outFile = new File(outFolderPath, filename);

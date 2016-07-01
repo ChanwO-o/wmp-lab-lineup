@@ -23,9 +23,6 @@ public class StimuliManager {
 
     private static final StimuliManager INSTANCE = new StimuliManager();
 
-    public static final int UPDOWN = 1;
-    public static final int RIGHTUP = 0;
-    public static final int NOANSWER = -1;
     public static final int CORRECT = 1;
     public static final int INCORRECT = -1;
     public static final String TARGET = "list1/";

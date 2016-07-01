@@ -29,6 +29,8 @@ public class Stage1 extends Fragment {
     TextView tvTargetLureDebug;
     Random random;
 
+    final double STIMULI_SIZE = 0.2; // 0.2 of height
+
     double sectorAngle;
     double cumulativeAngle;
     long stageStartTime;
@@ -39,11 +41,11 @@ public class Stage1 extends Fragment {
         @Override
         public void run() {
             long timeInMills = SystemClock.uptimeMillis() - stageStartTime;
-            int seconds = (int) timeInMills / 1000;
+//            int seconds = (int) timeInMills / 1000;
 
-            if (seconds >= LevelManager.getInstance().presentationtime) {
+            if (timeInMills >= LevelManager.getInstance().presentationtimeperstimulus * LevelManager.getInstance().setsize) // consistent time given per stimulus
                 Util.loadFragment(getActivity(), new Stage2());
-            } else {
+            else {
                 handler.postDelayed(this, 0); // loop until button is visible
             }
         }
@@ -58,7 +60,8 @@ public class Stage1 extends Fragment {
         super.onCreate(savedInstanceState);
         LevelManager.getInstance().startRound();
         LevelManager.getInstance().generateStimuliFirstPart();
-        circleLayoutParams = new FrameLayout.LayoutParams(200, 200);
+        int circleStimuliSide = Double.valueOf(LevelManager.getInstance().screenHeight * STIMULI_SIZE).intValue();
+        circleLayoutParams = new FrameLayout.LayoutParams(circleStimuliSide, circleStimuliSide);
         circleLayoutParams.gravity = Gravity.CENTER;
         random = new Random();
         sectorAngle = 360.00 / LevelManager.getInstance().setsize;
@@ -87,6 +90,12 @@ public class Stage1 extends Fragment {
         toggleDebug(LevelManager.getInstance().debug);
         handler.postDelayed(nextStage, 0);
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        handler.removeCallbacks(nextStage);
+        super.onPause();
     }
 
     private ImageView createTargetImageView(int labeledStimulus) throws IOException {

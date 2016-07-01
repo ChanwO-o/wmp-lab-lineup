@@ -65,7 +65,7 @@ public class Settings extends Fragment {
         swDebug.setTextOn("On");
         swDebug.setTextOff("Off");
         swTrainingMode.setTextOn("Time");
-        swTrainingMode.setTextOff("Rounds");
+        swTrainingMode.setTextOff("Levels");
         etSubject.setText(String.valueOf(LevelManager.getInstance().subject));
         etSession.setText(String.valueOf(LevelManager.getInstance().session));
 
@@ -150,7 +150,7 @@ public class Settings extends Fragment {
     }
 
     public void setRTLayoutLevels() {
-        tvRTPrompt.setText("Rounds");
+        tvRTPrompt.setText("Levels");
         etRoundsTime.setText(String.valueOf(LevelManager.getInstance().sessionLevels));
         tvRTUnit.setText("");
     }
