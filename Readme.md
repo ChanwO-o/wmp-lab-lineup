@@ -1,2 +1,3 @@
-LineUp game project
-Working Memory and Plasticity Lab
+#LineUp game project
+
+##Working Memory and Plasticity Lab

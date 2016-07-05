@@ -14,7 +14,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Random;
 
 import edu.uci.wmp.lineup.LevelManager;
 import edu.uci.wmp.lineup.R;
@@ -81,14 +85,12 @@ public class LevelFeedback extends Fragment implements View.OnClickListener {
             ivDemoQuit.setVisibility(View.GONE);
         ivDemoQuit.setOnClickListener(this);
         ivLevelFeedbackNext.setOnClickListener(this);
-
-
+        LevelManager.getInstance().levelsPlayed++;
         try {
             calculateNextLevel();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LevelManager.getInstance().levelsPlayed++;
         handler.postDelayed(showButton, 0);
         toggleDebug(LevelManager.getInstance().debug);
         return view;
@@ -112,21 +114,70 @@ public class LevelFeedback extends Fragment implements View.OnClickListener {
     private void calculateNextLevel() throws IOException {
         if (LevelManager.getInstance().wrongs <= LevelManager.getInstance().goup) {
             Log.wtf("LEVEL_UP", "++");
-            LevelManager.getInstance().level++; //TODO: SETUP LIMITS
+            if (LevelManager.getInstance().level < LevelManager.MAX_LEVEL)
+                LevelManager.getInstance().level++;
+            if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_LEVELS) && //TODO: also check for timedmode
+                    LevelManager.getInstance().levelsPlayed != LevelManager.getInstance().sessionLevels) // don't display feedback phrase on last trial
+                tvFeedbackPhrase.setText(getFeedbackPhrase(LEVEL_UP));
             flLevelFeedback.addView(getFace(LEVEL_UP));
-            tvFeedbackPhrase.setText("Level up");
         }
         else if (LevelManager.getInstance().wrongs < LevelManager.getInstance().godown) {
             Log.wtf("LEVEL_SAME", "==");
+            if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_LEVELS) && //TODO: also check for timedmode
+                    LevelManager.getInstance().levelsPlayed != LevelManager.getInstance().sessionLevels) // don't display feedback phrase on last trial
+                tvFeedbackPhrase.setText(getFeedbackPhrase(LEVEL_SAME));
             flLevelFeedback.addView(getFace(LEVEL_SAME));
-            tvFeedbackPhrase.setText("Level same");
         }
         else {
             Log.wtf("LEVEL_DOWN", "--");
-            LevelManager.getInstance().level--; //TODO: SETUP LIMITS
+            if (LevelManager.getInstance().level > LevelManager.MIN_LEVEL)
+                LevelManager.getInstance().level--;
+            if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_LEVELS) && //TODO: also check for timedmode
+                    LevelManager.getInstance().levelsPlayed != LevelManager.getInstance().sessionLevels)
+                tvFeedbackPhrase.setText(getFeedbackPhrase(LEVEL_DOWN));
             flLevelFeedback.addView(getFace(LEVEL_DOWN));
-            tvFeedbackPhrase.setText("Level down");
         }
+    }
+
+    /**
+     * Return random phrase from feedback phrase files with removed quotation marks, separated into lines
+     * Iterate down random number of lines in file
+     */
+    public String getFeedbackPhrase(int next) {
+        int resourceId = 0;
+        if (next == LEVEL_UP)
+            resourceId = R.raw.roundfeedback_up;
+        else if (next == LEVEL_DOWN)
+            resourceId = R.raw.roundfeedback_down;
+        else if (next == LEVEL_SAME)
+            resourceId = R.raw.roundfeedback_same;
+
+        InputStream inputStream = getActivity().getResources().openRawResource(resourceId);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String line = "";
+        try
+        {
+//            reader.mark(0); // when reset() is called, reader will return to line 0 after reaching last line in file
+            int r = new Random().nextInt(200);
+            for (int i = 0; i < r; ++i) {
+                if ((line = reader.readLine()) == null) { // reached end of phrases file
+                    inputStream = getActivity().getResources().openRawResource(resourceId); // reset inputstream and reader
+                    reader = new BufferedReader(new InputStreamReader(inputStream));
+                    line = reader.readLine();
+                }
+//                Log.d("getFeedbackPhrase()", "Reading line " + line);
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // replace punctuation with newline characters
+        String[] punc = new String[] {". ", "! ", "? "}; // keep one space after punctuation for effectiveness
+        for (String p : punc)
+            if (line != null)
+                line = line.replace(p, p + "\n");
+        return line;
     }
 
     @Override

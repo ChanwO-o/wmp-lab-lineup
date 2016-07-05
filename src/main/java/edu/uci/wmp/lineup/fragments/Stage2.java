@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,10 @@ public class Stage2 extends Fragment {
     final double CHOICE_BUTTON_WIDTH = 0.17;
     final double CHOICE_BUTTON_HEIGHT = 0.2;
     final double CHOICE_BUTTON_MARGIN = 0.05;
+    final long BLANK_SCREEN = 500;
     public static final int NOANSWER = -1;
     long stageStartTime;
+    long startBlankScreenTime;
 
     private Handler handler = new Handler();
 
@@ -51,6 +54,19 @@ public class Stage2 extends Fragment {
                 Util.loadFragment(getActivity(), new RoundFeedback());
             } else {
                 handler.postDelayed(this, 0); // loop until button is visible
+            }
+        }
+    };
+
+    private Runnable blankScreen = new Runnable() {
+        @Override
+        public void run() {
+            long timeInMills = SystemClock.uptimeMillis() - startBlankScreenTime;
+            if (timeInMills >= BLANK_SCREEN)
+                Util.loadFragment(getActivity(), new RoundFeedback());
+            else {
+                llChoiceButtons.setVisibility(View.INVISIBLE);
+                handler.postDelayed(this, 0);
             }
         }
     };
@@ -147,7 +163,8 @@ public class Stage2 extends Fragment {
                 LevelManager.getInstance().response = (int) view.getTag(); // submit answer
                 LevelManager.getInstance().reactionTime = SystemClock.uptimeMillis() - stageStartTime;
                 CSVWriter.getInstance().collectData();
-                Util.loadFragment(getActivity(), new RoundFeedback());
+                startBlankScreenTime = SystemClock.uptimeMillis();
+                handler.postDelayed(blankScreen, 0);
             }
         });
         return choiceButton;

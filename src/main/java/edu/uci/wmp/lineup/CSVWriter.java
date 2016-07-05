@@ -141,6 +141,7 @@ public class CSVWriter {
         for (int i : LevelManager.getInstance().responsechoice)
             classes += (i + " ");
         data.append(classes).append(COMMA);
+        data.append(Util.iterableToString(LevelManager.getInstance().secondPartSequence)).append(COMMA);
         data.append(LevelManager.getInstance().presentationtimeperstimulus).append(COMMA);
         data.append(LevelManager.getInstance().presentationtimeperstimulus * LevelManager.getInstance().setsize).append(COMMA);
         data.append(LevelManager.getInstance().choicetimelimit).append(COMMA);

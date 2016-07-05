@@ -9,6 +9,7 @@ part1 nonlures
 part1 lures
 stimuli presented
 response choices
+choices presented
 presentation time per stimulus
 presentation time part1
 presentation time part2
