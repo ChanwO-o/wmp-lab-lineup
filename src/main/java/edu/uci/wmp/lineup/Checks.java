@@ -18,7 +18,7 @@ public class Checks {
 
     public static final String LEVELFOLDER_PATH = "/wmplab/LineUp/levels/";
     public static final String STIMULIFOLDER_PATH = "/wmplab/LineUp/stimuli/";
-    public static final String STIMULI_THEME1_PATH = "/wmplab/LineUp/stimuli/geometry/";
+    public static final String STIMULI_THEME1_PATH = "/wmplab/LineUp/stimuli/" + StimuliManager.DEFAULT_THEME_NAME + "/";
 
     private StringBuilder errorMessages = new StringBuilder();
     private Context context;
@@ -121,9 +121,6 @@ public class Checks {
         File root = android.os.Environment.getExternalStorageDirectory();
         File outStimuliFolder = new File(root.getAbsolutePath() + STIMULIFOLDER_PATH);
         File list1Folder = new File(root.getAbsolutePath() + STIMULI_THEME1_PATH);
-//        File list2Folder = new File(root.getAbsolutePath() + STIMULI_LIST2_PATH);
-//        File list3Folder = new File(root.getAbsolutePath() + STIMULI_LIST3_PATH);
-//        File distFolder = new File(root.getAbsolutePath() + STIMULI_DIST_PATH);
         File[] stimFolders = new File[] {list1Folder}; //, list2Folder, list3Folder, distFolder};
 
         if (!outStimuliFolder.exists()) { // no dir; don't bother looking through stimuli files
@@ -178,34 +175,34 @@ public class Checks {
 
     public void populateStimuliDirectory() throws InvalidStimuliFilesException {
         File root = android.os.Environment.getExternalStorageDirectory();
-        String outStimuliFolderPath = root.getAbsolutePath() + STIMULI_THEME1_PATH;
-        File outStimuliFolder = new File(outStimuliFolderPath);
-        outStimuliFolder.mkdirs();
+        String defaultThemeFolderPath = root.getAbsolutePath() + STIMULI_THEME1_PATH;
+        File defaultThemeFolder = new File(defaultThemeFolderPath);
+	    defaultThemeFolder.mkdirs();
 
         try {
-            String[] destinations = new String[8];
-            for (int i = 1; i <= 8; ++i) { // TODO: use constant here for numberofsets in theme
-                destinations[i - 1] = "geometry/set " + i;
+            String[] setPaths = new String[8];
+            for (int i = 1; i <= StimuliManager.getInstance().numberOfSetsInTheme; ++i) {
+	            setPaths[i - 1] = "set " + i + "/";
             }
-            for (String dest : destinations) {
-                String newOutStimuliFolderPath = outStimuliFolderPath + dest;
-                outStimuliFolder = new File(newOutStimuliFolderPath);
-                outStimuliFolder.mkdir();
-                copyDirectory("stimuli/" + dest + "/", newOutStimuliFolderPath);
+            for (String set : setPaths) {
+                String setFolderPath = defaultThemeFolderPath + set;
+                File setFolder = new File(setFolderPath);
+	            Log.i("populateStimuliDir()", "folder " + setFolderPath + setFolder.mkdirs());
+                copyDirectory("stimuli/" + StimuliManager.DEFAULT_THEME_NAME + "/" + set, setFolderPath);
             }
         }
         catch (IOException e) { e.printStackTrace(); throw new InvalidStimuliFilesException(); }
     }
 
     private void copyDirectory(String assetFolderPath, String outFolderPath) throws IOException {
-        Log.i("copyDirectory()", assetFolderPath + " -> " + outFolderPath);
-//        String trimmedAssetFolderPath = assetFolderPath.substring(0, assetFolderPath.length() - 1);
-//        Log.i("copyDirectory()", "trimmedAssetFolderPath " + trimmedAssetFolderPath);
+	    Log.i("copyDirectory()", assetFolderPath + " -> " + outFolderPath);
+        String trimmedAssetFolderPath = assetFolderPath.substring(0, assetFolderPath.length() - 1);
+        Log.i("copyDirectory()", "trimmedAssetFolderPath " + trimmedAssetFolderPath);
         AssetManager am = context.getAssets();
         InputStream in;
         OutputStream out;
 
-        for (String filename : am.list(assetFolderPath)) {
+        for (String filename : am.list(trimmedAssetFolderPath)) {
             Log.d("reading asset", filename);
             in = am.open(assetFolderPath + filename);
             File outFile = new File(outFolderPath, filename);

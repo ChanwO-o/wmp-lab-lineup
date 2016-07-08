@@ -1,11 +1,12 @@
-theme=1
+theme=geometry
 setsize=5
 lurespartone=1
 nonlurespartone=4
 choices=3
-responsechoice=[3]
+responsechoice=[3,1,2]
 presentationtimeperstimulus=750
 choicetimelimit=7
 repetitions=3
+rprounds=1
 goup=1
 godown=3

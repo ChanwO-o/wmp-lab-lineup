@@ -62,6 +62,7 @@ public class RoundFeedback extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+	    LevelManager.getInstance().fillPotentialRPLures(); // setup potential rp lures before next round begins
     }
 
     @Override

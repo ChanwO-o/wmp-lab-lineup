@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,24 +26,21 @@ public class StimuliManager {
 
     public static final int CORRECT = 1;
     public static final int INCORRECT = -1;
-    public static final String TARGET = "list1/";
-    public static final String SEMANTIC = "list2/";
-    public static final String PERCEPTUAL = "list3/";
-    public static final String DISTRACTOR = "distractors/";
     public static final String MISC = "miscellaneous/";
-    public static final String FACE = "faces/";
+	public static final String DEFAULT_THEME_NAME = "geometry";
     public static final int MIN_STIMULI_CHOICES = 1;
     public static final int MAX_STIMULI_CHOICES = 12;
     public static final int TARGET_CODE = 0;
     public static final int LURE_CODE = 1;
     public static final int DISTRACTOR_CODE = 2;
-    public static final int RANDOM_CODE = 3;
-    public static final int MIN_CHOICE_STIMULI_SIZE = 100;
-    public static final int CHOICE_STIMULI_SIZE_MULTIPLIER = 25;
+	public static final int RANDOM_CODE = 3;
+	public static final int RP_LURE_CODE = 4;
 
     private Context context;
+	private String themeName = "";
 
-//    public static final ArrayList<Integer> TEMPLATE = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+	public int numberOfSetsInTheme;
+	public int numberOfPicturesInSet;
 
     public StimuliManager() {
 
@@ -51,24 +49,12 @@ public class StimuliManager {
     public void setContext(Context context) { this.context = context; }
 
     /**
-     * @param folder using static string from StimuliManager.java
-     * @param filename just the filename only (e.g. 1)
-     */
-//    public Bitmap getStimuli(Context context, String folder, int filename) throws IOException {
-//        AssetManager assetManager = context.getAssets();
-//        InputStream is = assetManager.open(getImagePath(folder, filename));
-//        return BitmapFactory.decodeStream(is);
-//    }
-
-    /**
      * @param labeledFileName folder label in first digit using static int from StimuliManager.java + filename
      */
-    public Bitmap getStimuli(int labeledFileName) throws FileNotFoundException, IOException {
-        AssetManager assetManager = context.getAssets();
-        InputStream is = assetManager.open(getImagePath(labeledFileName));
-//        String path = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + ;
-//        File imageFile = new File(path);
-//        InputStream in = new FileInputStream(imageFile);
+    public Bitmap getStimuli(int labeledFileName) throws IOException {
+        String path = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + getImagePath(labeledFileName);
+        File imageFile = new File(path);
+        InputStream is = new FileInputStream(imageFile);
         return BitmapFactory.decodeStream(is);
     }
 
@@ -104,8 +90,33 @@ public class StimuliManager {
     public String getImagePath(int labeledFileName) {
         int picNum = labeledFileName % 100;
         int setNum = (labeledFileName - (picNum)) / 100;
-        return "stimuli/geometry/set " + setNum + "/" + picNum + ".png";
+        return "/wmplab/LineUp/stimuli/" + themeName + "/set " + setNum + "/" + picNum + ".png";
     }
+
+	/**
+	 * Check if given theme exists, set theme to default if not
+	 * Configure number of sets in theme & number of stimuli in each set
+	 */
+	public void setTheme(String theme) {
+		String stimPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/wmplab/LineUp/stimuli/";
+		File themeFolder = new File(stimPath + theme);
+		// set theme name
+		if (themeFolder.exists())
+			themeName = theme;
+		else {
+			Log.i("theme does not exist", "set to default theme");
+			themeName = DEFAULT_THEME_NAME;
+		}
+
+		// set @numberOfSetsInTheme & @numberOfPicturesInSet
+		File temp = new File(stimPath + themeName);
+		numberOfSetsInTheme = temp.list().length;
+		temp = new File(stimPath + themeName + "/set 1");
+		numberOfPicturesInSet = temp.list().length;
+
+		Log.d("numberOfSetsInTheme", "" + numberOfSetsInTheme);
+		Log.d("numberOfPicturesInSet", "" + numberOfPicturesInSet);
+	}
 
     public static StimuliManager getInstance() { return INSTANCE; }
 }
