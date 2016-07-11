@@ -6,10 +6,13 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+//import android.app.Fragment;
+//import android.app.FragmentManager;
+//import android.app.FragmentTransaction;
 import android.view.View;
 
 public final class Util {
@@ -21,7 +24,7 @@ public final class Util {
     /**
      * Clear status & navigation bars from screen, keep them off with STICKY flag
      */
-    public static void dimSystemBar(Activity activity) {
+    public static void dimSystemBar(AppCompatActivity activity) {
         final View window = activity.getWindow().getDecorView();
         setFlags(window);
 
@@ -48,8 +51,8 @@ public final class Util {
     /**
      * Replace main fragment container with fragment given in parameter
      */
-    public static void loadFragment(Activity activity, Fragment fragment) {
-        FragmentManager fm = activity.getFragmentManager();
+    public static void loadFragment(AppCompatActivity activity, Fragment fragment) {
+        FragmentManager fm = activity.getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();

@@ -514,7 +514,7 @@ public class LevelManager {
 	    }
 
 	    // current round is non-rp round
-	    for (int classNum : responsechoice.get(round))
+	    for (int classNum : responsechoice.get(round - 1))
 		    secondPartSequence.add(getStimulusFromPotentialStructure(classNum));
     }
 

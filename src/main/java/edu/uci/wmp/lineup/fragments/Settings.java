@@ -2,7 +2,8 @@ package edu.uci.wmp.lineup.fragments;
 
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,7 +141,7 @@ public class Settings extends Fragment {
                     LevelManager.getInstance().questions = swQuestions.isChecked(); // set questions
                     LevelManager.getInstance().debug = swDebug.isChecked(); // set debug
                     LevelManager.getInstance().saveSharedPreferences(); // save settings variables to preferences
-                    Util.loadFragment(getActivity(), new MainScreen());
+                    Util.loadFragment((AppCompatActivity) getActivity(), new MainScreen());
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), "Invalid inputs: Subject & session numbers must be integers", Toast.LENGTH_SHORT).show();
                 }

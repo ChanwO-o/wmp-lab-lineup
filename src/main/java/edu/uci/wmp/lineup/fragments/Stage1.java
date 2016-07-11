@@ -1,9 +1,10 @@
 package edu.uci.wmp.lineup.fragments;
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,7 +45,7 @@ public class Stage1 extends Fragment {
 //            int seconds = (int) timeInMills / 1000;
 
             if (timeInMills >= LevelManager.getInstance().presentationtimeperstimulus * LevelManager.getInstance().setsize) // consistent time given per stimulus
-                Util.loadFragment(getActivity(), new Stage2());
+                Util.loadFragment((AppCompatActivity) getActivity(), new Stage2());
             else {
                 handler.postDelayed(this, 0); // loop until button is visible
             }

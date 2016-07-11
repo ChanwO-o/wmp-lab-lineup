@@ -1,9 +1,10 @@
 package edu.uci.wmp.lineup.fragments;
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,14 +45,14 @@ public class Stage2 extends Fragment {
         @Override
         public void run() {
             long timeInMills = SystemClock.uptimeMillis() - stageStartTime;
-            int seconds = (int) timeInMills / 1000;
+//            int seconds = (int) timeInMills / 1000;
 
-            if (seconds >= LevelManager.getInstance().choicetimelimit) // TIME UP!
+            if (timeInMills >= LevelManager.getInstance().choicetimelimit) // TIME UP!
             {
                 LevelManager.getInstance().response = NOANSWER; // submit no answer
                 LevelManager.getInstance().reactionTime = (long) NOANSWER;
                 CSVWriter.getInstance().collectData();
-                Util.loadFragment(getActivity(), new RoundFeedback());
+                Util.loadFragment((AppCompatActivity) getActivity(), new RoundFeedback());
             } else {
                 handler.postDelayed(this, 0); // loop until button is visible
             }
@@ -63,7 +64,7 @@ public class Stage2 extends Fragment {
         public void run() {
             long timeInMills = SystemClock.uptimeMillis() - startBlankScreenTime;
             if (timeInMills >= BLANK_SCREEN)
-                Util.loadFragment(getActivity(), new RoundFeedback());
+                Util.loadFragment((AppCompatActivity) getActivity(), new RoundFeedback());
             else {
                 llChoiceButtons.setVisibility(View.INVISIBLE);
                 handler.postDelayed(this, 0);

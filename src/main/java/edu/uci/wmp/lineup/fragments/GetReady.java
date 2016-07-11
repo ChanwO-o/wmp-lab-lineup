@@ -3,9 +3,10 @@ package edu.uci.wmp.lineup.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +52,7 @@ public class GetReady extends Fragment implements View.OnClickListener {
         public void run() {
             long timeInMills = SystemClock.uptimeMillis() - startBlankScreenTime;
             if (timeInMills >= BLANK_SCREEN)
-                Util.loadFragment(getActivity(), new Stage1());
+                Util.loadFragment((AppCompatActivity) getActivity(), new Stage1());
             else {
                 tvGetReady.setVisibility(View.INVISIBLE);
                 ivReadyNext.setVisibility(View.INVISIBLE);

@@ -118,26 +118,34 @@ public class Checks {
      * Append missing file names or directories to error message queue
      */
     public void checkStimuliDirectory() throws InvalidStimuliFilesException {
-        File root = android.os.Environment.getExternalStorageDirectory();
-        File outStimuliFolder = new File(root.getAbsolutePath() + STIMULIFOLDER_PATH);
-        File list1Folder = new File(root.getAbsolutePath() + STIMULI_THEME1_PATH);
-        File[] stimFolders = new File[] {list1Folder}; //, list2Folder, list3Folder, distFolder};
+        String outStimuliFolderPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + STIMULIFOLDER_PATH;
+	    String defaultThemeFolderPath = outStimuliFolderPath + StimuliManager.DEFAULT_THEME_NAME;
+        File outStimuliFolder = new File(outStimuliFolderPath);
+        File defaultThemeFolder = new File(defaultThemeFolderPath);
 
         if (!outStimuliFolder.exists()) { // no dir; don't bother looking through stimuli files
             Log.e("checkStimuliDirectory()", "Stimuli Folder does not exist");
             errorMessages.append("Stimuli folder does not exist\n");
             throw new InvalidStimuliFilesException();
         }
+	    if (!defaultThemeFolder.exists()) { // no default theme folder
+		    Log.e("checkStimuliDirectory()", "Default theme " + StimuliManager.DEFAULT_THEME_NAME + " does not exist");
+		    errorMessages.append("Default theme does not exist");
+		    throw new InvalidStimuliFilesException();
+	    }
 
-        for (File stimFolder : stimFolders) // check each stimuli folder one by one
+        for (int s = 1; s <= StimuliManager.DEFAULT_THEME_SETS; ++s) // check each stimuli folder one by one
         {
-            if (!stimFolder.exists()) {
-                String missingFolderMsg = stimFolder.getName() + " folder missing\n";
+	        Log.i("checking set", "" + s);
+	        File setFolder = new File(defaultThemeFolderPath + "/set" + s);
+            if (!setFolder.exists()) {
+	            Log.i("set" + s, "does not exist");
+                String missingFolderMsg = setFolder.getName() + " folder missing\n";
                 errorMessages.append(missingFolderMsg);
                 continue;
             }
 
-            String[] stimuliFiles = stimFolder.list();
+            String[] stimuliFiles = setFolder.list();
             Set<Integer> checkedStimuli = new HashSet<>();
 
             for (String stimuli : stimuliFiles) {
@@ -147,14 +155,14 @@ public class Checks {
                     continue;
                 int numEndIndex = stimuli.indexOf(".png");
                 int stimuliNumber = Integer.valueOf(stimuli.substring(0, numEndIndex)); // get stimuli number
-                if (stimuliNumber < StimuliManager.MIN_STIMULI_CHOICES || StimuliManager.MAX_STIMULI_CHOICES < stimuliNumber)   // stimuli file's number must be in range
+                if (stimuliNumber < StimuliManager.MIN_STIMULI_CHOICES || StimuliManager.DEFAULT_THEME_STIMULI < stimuliNumber)   // stimuli file's number must be in range
                     continue;
                 checkedStimuli.add(stimuliNumber);
             }
 
-            for (int i = StimuliManager.MIN_STIMULI_CHOICES; i <= StimuliManager.MAX_STIMULI_CHOICES; ++i) {
+            for (int i = StimuliManager.MIN_STIMULI_CHOICES; i <= StimuliManager.DEFAULT_THEME_STIMULI; ++i) {
                 if (!checkedStimuli.contains(i)) {
-                    String missingMsg = stimFolder.getName() + "/" + i + ".png is missing\n";
+                    String missingMsg = setFolder.getName() + "/" + i + ".png is missing\n";
                     errorMessages.append(missingMsg);
                 }
             }
@@ -180,9 +188,9 @@ public class Checks {
 	    defaultThemeFolder.mkdirs();
 
         try {
-            String[] setPaths = new String[8];
-            for (int i = 1; i <= StimuliManager.getInstance().numberOfSetsInTheme; ++i) {
-	            setPaths[i - 1] = "set " + i + "/";
+            String[] setPaths = new String[StimuliManager.DEFAULT_THEME_SETS];
+            for (int i = 1; i <= StimuliManager.DEFAULT_THEME_SETS; ++i) {
+	            setPaths[i - 1] = "set" + i + "/";
             }
             for (String set : setPaths) {
                 String setFolderPath = defaultThemeFolderPath + set;

@@ -27,7 +27,9 @@ public class StimuliManager {
     public static final int CORRECT = 1;
     public static final int INCORRECT = -1;
     public static final String MISC = "miscellaneous/";
-	public static final String DEFAULT_THEME_NAME = "geometry";
+	public static final String DEFAULT_THEME_NAME = "shapes";
+	public static final int DEFAULT_THEME_SETS = 26;
+	public static final int DEFAULT_THEME_STIMULI = 9;
     public static final int MIN_STIMULI_CHOICES = 1;
     public static final int MAX_STIMULI_CHOICES = 12;
     public static final int TARGET_CODE = 0;
@@ -90,7 +92,7 @@ public class StimuliManager {
     public String getImagePath(int labeledFileName) {
         int picNum = labeledFileName % 100;
         int setNum = (labeledFileName - (picNum)) / 100;
-        return "/wmplab/LineUp/stimuli/" + themeName + "/set " + setNum + "/" + picNum + ".png";
+        return "/wmplab/LineUp/stimuli/" + themeName + "/set" + setNum + "/" + picNum + ".png";
     }
 
 	/**
@@ -111,7 +113,7 @@ public class StimuliManager {
 		// set @numberOfSetsInTheme & @numberOfPicturesInSet
 		File temp = new File(stimPath + themeName);
 		numberOfSetsInTheme = temp.list().length;
-		temp = new File(stimPath + themeName + "/set 1");
+		temp = new File(stimPath + themeName + "/set1");
 		numberOfPicturesInSet = temp.list().length;
 
 		Log.d("numberOfSetsInTheme", "" + numberOfSetsInTheme);

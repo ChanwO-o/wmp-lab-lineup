@@ -2,9 +2,10 @@ package edu.uci.wmp.lineup.fragments;
 
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,9 +25,6 @@ import edu.uci.wmp.lineup.LevelManager;
 import edu.uci.wmp.lineup.R;
 import edu.uci.wmp.lineup.StimuliManager;
 import edu.uci.wmp.lineup.Util;
-import edu.uci.wmp.lineup.fragments.GetReady;
-import edu.uci.wmp.lineup.fragments.MainScreen;
-import edu.uci.wmp.lineup.fragments.Stage2;
 
 
 public class LevelFeedback extends Fragment implements View.OnClickListener {
@@ -186,16 +184,16 @@ public class LevelFeedback extends Fragment implements View.OnClickListener {
             case R.id.ivLevelFeedbackNext:
                 if (LevelManager.getInstance().levelsPlayed == LevelManager.getInstance().sessionLevels) { // end session
                     if (LevelManager.getInstance().questions)
-                        Util.loadFragment(getActivity(), new ReflectionQuestion());
+                        Util.loadFragment((AppCompatActivity) getActivity(), new ReflectionQuestion());
                     else
-                        Util.loadFragment(getActivity(), new MainScreen());
+                        Util.loadFragment((AppCompatActivity) getActivity(), new MainScreen());
                 }
                 else if (LevelManager.getInstance().levelsPlayed < LevelManager.getInstance().sessionLevels) // next level
-                    Util.loadFragment(getActivity(), new GetReady());
+                    Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
                 break;
 
             case R.id.ivDemoQuit:
-                Util.loadFragment(getActivity(), new MainScreen());
+                Util.loadFragment((AppCompatActivity) getActivity(), new MainScreen());
                 break;
         }
     }

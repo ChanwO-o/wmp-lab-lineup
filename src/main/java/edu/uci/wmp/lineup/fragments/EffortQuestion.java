@@ -2,7 +2,8 @@ package edu.uci.wmp.lineup.fragments;
 
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
@@ -102,8 +103,8 @@ public class EffortQuestion extends Fragment {
         fillHiddenViews();
         setViewsVisible(View.INVISIBLE); // remove flicker
 
-        seekBar.bringToFront();
-        seekBar.invalidate(); // for drawing seekbar above labels
+//        seekBar.bringToFront();
+//        seekBar.invalidate(); // for drawing seekbar above labels
         seekBar.getThumb().setAlpha(200); // set transparency value 0-255
 
         // scale images
@@ -130,7 +131,7 @@ public class EffortQuestion extends Fragment {
                         setUpNextQuestion();
                     }
                     else
-                        Util.loadFragment(getActivity(), new SessionResults());
+                        Util.loadFragment((AppCompatActivity) getActivity(), new SessionResults());
                 }
             }
         });

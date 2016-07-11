@@ -5,7 +5,8 @@ import android.annotation.SuppressLint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -69,7 +70,7 @@ public class MainScreen extends Fragment implements View.OnTouchListener {
                 if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_DEMO))
                     LevelManager.getInstance().trainingmode = LevelManager.TRAININGMODE_LEVELS;
                 LevelManager.getInstance().startSession();
-                Util.loadFragment(getActivity(), new GetReady());
+                Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
             }
         });
 
@@ -78,7 +79,7 @@ public class MainScreen extends Fragment implements View.OnTouchListener {
             public void onClick(View v) {
                 LevelManager.getInstance().trainingmode = LevelManager.TRAININGMODE_DEMO; // start demo mode and play max 3 rounds
                 LevelManager.getInstance().startSession();
-                Util.loadFragment(getActivity(), new GetReady());
+                Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
 //                Util.loadFragment(getActivity(), new ReflectionQuestion()); // used for testing questions easily
             }
         });
@@ -88,7 +89,7 @@ public class MainScreen extends Fragment implements View.OnTouchListener {
     @Override
     public void onResume() {
         super.onResume();
-        Util.dimSystemBar(getActivity());
+        Util.dimSystemBar((AppCompatActivity) getActivity());
     }
 
     /**
@@ -160,7 +161,7 @@ public class MainScreen extends Fragment implements View.OnTouchListener {
             if (!r.selected)
                 return;
 //        Log.i("checkAllRects()", "Opening Settings");
-        Util.loadFragment(getActivity(), new Settings());
+        Util.loadFragment((AppCompatActivity) getActivity(), new Settings());
     }
 
     @SuppressLint("ParcelCreator")

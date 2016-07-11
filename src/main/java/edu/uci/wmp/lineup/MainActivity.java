@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             MainScreen mainScreenFragment = new MainScreen();
-            getFragmentManager().beginTransaction().add(R.id.fragment_container, mainScreenFragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mainScreenFragment).commit();
         }
     }
 

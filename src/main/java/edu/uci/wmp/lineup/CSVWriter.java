@@ -137,10 +137,7 @@ public class CSVWriter {
         data.append(LevelManager.getInstance().nonlurespartone).append(COMMA);
         data.append(LevelManager.getInstance().lurespartone).append(COMMA);
         data.append(Util.iterableToString(LevelManager.getInstance().stimuliSequence)).append(COMMA);
-        String classes = "";
-        for (int[] cArray : LevelManager.getInstance().responsechoice)
-	        classes += Arrays.toString(cArray);
-        data.append(classes).append(COMMA);
+        data.append(Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1))).append(COMMA);
         data.append(Util.iterableToString(LevelManager.getInstance().secondPartSequence)).append(COMMA);
         data.append(LevelManager.getInstance().presentationtimeperstimulus).append(COMMA);
         data.append(LevelManager.getInstance().presentationtimeperstimulus * LevelManager.getInstance().setsize).append(COMMA);

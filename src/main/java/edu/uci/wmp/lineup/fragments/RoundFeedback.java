@@ -4,8 +4,8 @@ package edu.uci.wmp.lineup.fragments;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,6 +27,7 @@ public class RoundFeedback extends Fragment {
     ImageView ivRoundFeedbackNext;
     final double FACE_WIDTH = 0.5;
     final double FACE_HEIGHT = 0.5;
+	final double FACE_TOPMARGIN_PERCENTAGE = 0.10;
     final long BLANK_SCREEN = 500;
     long startBlankScreenTime;
 
@@ -40,12 +41,12 @@ public class RoundFeedback extends Fragment {
                 LevelManager.getInstance().roundsPlayed++;
                 if (LevelManager.getInstance().round == LevelManager.getInstance().repetitions) { // check if end of level
                     Log.wtf("round feedback", "round ==, end level");
-                    Util.loadFragment(getActivity(), new LevelFeedback());
+                    Util.loadFragment((AppCompatActivity) getActivity(), new LevelFeedback());
                 }
                 else {
                     Log.wtf("round feedback", "round ++, next round");
                     LevelManager.getInstance().round++;
-                    Util.loadFragment(getActivity(), new Stage1());
+                    Util.loadFragment((AppCompatActivity) getActivity(), new Stage1());
                 }
             }
             else {
@@ -60,7 +61,7 @@ public class RoundFeedback extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 	    LevelManager.getInstance().fillPotentialRPLures(); // setup potential rp lures before next round begins
     }
@@ -122,6 +123,7 @@ public class RoundFeedback extends Fragment {
         int faceHeight = Double.valueOf(LevelManager.getInstance().screenHeight * FACE_HEIGHT).intValue();
         FrameLayout.LayoutParams faceLayoutParams = new FrameLayout.LayoutParams(faceWidth, faceHeight);
         faceLayoutParams.gravity = Gravity.CENTER;
+	    faceLayoutParams.topMargin = Double.valueOf(LevelManager.getInstance().screenHeight * FACE_TOPMARGIN_PERCENTAGE).intValue();
         ivFace.setLayoutParams(faceLayoutParams);
         return ivFace;
     }
