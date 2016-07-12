@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import java.io.IOException;
 
+import edu.uci.wmp.lineup.CSVWriter;
 import edu.uci.wmp.lineup.LevelManager;
 import edu.uci.wmp.lineup.R;
 import edu.uci.wmp.lineup.StimuliManager;
@@ -38,7 +39,7 @@ public class RoundFeedback extends Fragment {
         public void run() {
             long timeInMills = SystemClock.uptimeMillis() - startBlankScreenTime;
             if (timeInMills >= BLANK_SCREEN) {
-                LevelManager.getInstance().roundsPlayed++;
+                LevelManager.getInstance().roundsPlayedThisSession++;
                 if (LevelManager.getInstance().round == LevelManager.getInstance().repetitions) { // check if end of level
                     Log.wtf("round feedback", "round ==, end level");
                     Util.loadFragment((AppCompatActivity) getActivity(), new LevelFeedback());
@@ -95,6 +96,7 @@ public class RoundFeedback extends Fragment {
         catch (IOException e) {
             e.printStackTrace();
         }
+	    CSVWriter.getInstance().collectData();
         return view;
     }
 

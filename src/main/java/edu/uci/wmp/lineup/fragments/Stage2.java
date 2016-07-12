@@ -51,7 +51,6 @@ public class Stage2 extends Fragment {
             {
                 LevelManager.getInstance().response = NOANSWER; // submit no answer
                 LevelManager.getInstance().reactionTime = (long) NOANSWER;
-                CSVWriter.getInstance().collectData();
                 Util.loadFragment((AppCompatActivity) getActivity(), new RoundFeedback());
             } else {
                 handler.postDelayed(this, 0); // loop until button is visible
@@ -151,7 +150,7 @@ public class Stage2 extends Fragment {
      * Unless imageLabel == BLANK_BUTTON_TAG, cuz that obviously leaves the button blank.
      */
     private ImageButton createImageButton(int imageLabel, LinearLayout.LayoutParams layoutParams) throws IOException {
-        ImageButton choiceButton = new ImageButton(getActivity());
+        final ImageButton choiceButton = new ImageButton(getActivity());
         choiceButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
         choiceButton.setAdjustViewBounds(true);
         if (imageLabel != BLANK_BUTTON_TAG)
@@ -161,9 +160,8 @@ public class Stage2 extends Fragment {
         choiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LevelManager.getInstance().response = (int) view.getTag(); // submit answer
+                LevelManager.getInstance().response = (int) choiceButton.getTag(); // submit answer
                 LevelManager.getInstance().reactionTime = SystemClock.uptimeMillis() - stageStartTime;
-                CSVWriter.getInstance().collectData();
                 startBlankScreenTime = SystemClock.uptimeMillis();
                 handler.postDelayed(blankScreen, 0);
             }
@@ -179,9 +177,9 @@ public class Stage2 extends Fragment {
                 "\nfirstPartTargetSets: " + Util.iterableToString(LevelManager.getInstance().firstPartTargetSets) +
                 "\nfirstPartLureSets: " + Util.iterableToString(LevelManager.getInstance().firstPartLureSets) +
                 "\nsecondPartSequence: " + Util.iterableToString(LevelManager.getInstance().secondPartSequence) +
-                "\nsecondPartPotentialTargets: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialTargets) +
-                "\nsecondPartPotentialLures: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialLures) +
-                "\nsecondPartPotentialDistractors: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialDistractors) +
+//                "\nsecondPartPotentialTargets: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialTargets) +
+//                "\nsecondPartPotentialLures: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialLures) +
+//                "\nsecondPartPotentialDistractors: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialDistractors) +
 		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures) +
 		        "\nrpRounds: " + Util.iterableToString(LevelManager.getInstance().rpRoundsOrder);
         tvSecondDebug.setText(msg);

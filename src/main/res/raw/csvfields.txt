@@ -10,6 +10,7 @@ part1 lures
 stimuli presented
 response choices
 choices presented
+response
 presentation time per stimulus
 presentation time part1
 presentation time part2

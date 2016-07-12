@@ -137,8 +137,10 @@ public class CSVWriter {
         data.append(LevelManager.getInstance().nonlurespartone).append(COMMA);
         data.append(LevelManager.getInstance().lurespartone).append(COMMA);
         data.append(Util.iterableToString(LevelManager.getInstance().stimuliSequence)).append(COMMA);
-        data.append(Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1))).append(COMMA);
-        data.append(Util.iterableToString(LevelManager.getInstance().secondPartSequence)).append(COMMA);
+	    String respchoi = Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1)).replace(',', ' '); // responsechoice replace commas for csv format
+        data.append(respchoi).append(COMMA);
+	    data.append(Util.iterableToString(LevelManager.getInstance().secondPartSequence)).append(COMMA);
+	    data.append(LevelManager.getInstance().response).append(COMMA);
         data.append(LevelManager.getInstance().presentationtimeperstimulus).append(COMMA);
         data.append(LevelManager.getInstance().presentationtimeperstimulus * LevelManager.getInstance().setsize).append(COMMA);
         data.append(LevelManager.getInstance().choicetimelimit).append(COMMA);

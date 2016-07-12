@@ -28,7 +28,7 @@ public class StimuliManager {
     public static final int INCORRECT = -1;
     public static final String MISC = "miscellaneous/";
 	public static final String DEFAULT_THEME_NAME = "shapes";
-	public static final int DEFAULT_THEME_SETS = 26;
+	public static final int DEFAULT_THEME_SETS = 24;
 	public static final int DEFAULT_THEME_STIMULI = 9;
     public static final int MIN_STIMULI_CHOICES = 1;
     public static final int MAX_STIMULI_CHOICES = 12;

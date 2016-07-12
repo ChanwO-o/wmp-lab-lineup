@@ -53,8 +53,9 @@ public class LevelManager {
     public int session = 1;
     public int level = 1;                                   // current level
     public int levelsPlayed = 0;                            // cumulative number of levels played; if == sessionLevels: end game
+	public int repetitions = 3;                             // number of rounds to play for current level
     public int round = 1;                                   // current round out of repetitions; if == repetitions: load next level
-    public int roundsPlayed = 0;                            // equivalent of 'current index'
+    public int roundsPlayedThisSession = 0;                 // equivalent of 'current index'
     public int wrongs = 0;                                  // number of rounds answered wrong out of repetitions; reset to 0 upon start of new level
     public int points = 0;
     public String trainingmode = TRAININGMODE_LEVELS;
@@ -64,7 +65,7 @@ public class LevelManager {
     public boolean debug = false;
     public boolean testStarted = false;
     public long sessionStartMills = 0;
-	public List<Integer> rpRoundsOrder;                         // order of rp rounds and non-rp rounds
+	public List<Integer> rpRoundsOrder;                     // order of rp rounds and non-rp rounds
 
 	/** Level file variables */
     public String theme = "geometry";
@@ -73,10 +74,9 @@ public class LevelManager {
     public int nonlurespartone = 0;
     public int choices = 0;
     public List<int[]> responsechoice;
-    public int presentationtimeperstimulus = 0;              // display time in mills per stimulus
-	public int choicetimelimit = 0;                             // seconds for player to answer in stage 2
-	public int repetitions = 3;                                 // number of rounds to play for current level
-	public int rprounds = 0;                                    // number of rounds in level involving rp lures
+    public int presentationtimeperstimulus = 0;             // display time in mills per stimulus
+	public int choicetimelimit = 0;                         // seconds for player to answer in stage 2
+	public int rprounds = 0;                                // number of rounds in level involving rp lures
 	public int goup = 1;                                    // max number of wrongs player can get to progress up a level
 	public int godown = 2;                                  // min number of wrongs player can get to move down a level
 
@@ -90,7 +90,7 @@ public class LevelManager {
 	public List<Integer> secondPartPotentialTargets;            // collection of all possible target stimuli candidates (exactly same as presented)
 	public List<Integer> secondPartPotentialLures;              // collection of all possible lure stimuli candidates (same shape, different color)
 	public List<Integer> secondPartPotentialDistractors;        // collection of all possible distractor stimuli candidates (new shape, can have same color)
-	public List<Integer> secondPartRPLures;              //
+	public List<Integer> secondPartRPLures;                     //
 	public int response;                                        // label of button the player has clicked
 	public long reactionTime;                                   // reaction times of click
 	public int accuracy;                                        // correct or incorrect answer for the level
@@ -158,7 +158,7 @@ public class LevelManager {
 
         sessionStartMills = SystemClock.uptimeMillis(); // record session starting time (used for trainingmode = "time")
         round = 0;
-        roundsPlayed = 0;
+	    roundsPlayedThisSession = 0;
         levelsPlayed = 0;
         testStarted = true;
         points = 0; // reset score
@@ -472,7 +472,7 @@ public class LevelManager {
                 labeledStimulus = 100 * setNum + picNum; // 101 == set 1, pic 1
             }
             while (stimuliSequence.contains(labeledStimulus) // prevent duplicates
-		            && secondPartRPLures.contains(labeledStimulus)); // rp lures cannot be shown in stage 1 of next round
+		            || secondPartRPLures.contains(labeledStimulus)); // rp lures cannot be shown in stage 1 of next round
 	        Log.i("generateStimuli()", "Adding target" + labeledStimulus);
             stimuliSequence.add(labeledStimulus);
         }
@@ -485,7 +485,7 @@ public class LevelManager {
                 labeledStimulus = 100 * setNum + picNum;
             }
             while (stimuliSequence.contains(labeledStimulus)
-		            && secondPartRPLures.contains(labeledStimulus)); // TODO: combine this part with above, exactly the same
+		            || secondPartRPLures.contains(labeledStimulus)); // TODO: combine this part with above, exactly the same
 	        Log.i("generateStimuli()", "Adding lure" + labeledStimulus);
             stimuliSequence.add(labeledStimulus);
         }
