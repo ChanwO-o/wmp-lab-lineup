@@ -34,14 +34,14 @@ public class SessionResults extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_session_results, container, false);
 
-//        TextView tvResults = (TextView) view.findViewById(R.id.tvResults);
+        TextView tvResults = (TextView) view.findViewById(R.id.tvResults);
         ImageView ivBackToMain = (ImageView) view.findViewById(R.id.ivBackToMain);
 
-//        if (!LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_DEMO))
-//            LevelManager.getInstance().saveLevelToFile(true); // save progress
+        if (!LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_DEMO))
+            LevelManager.getInstance().saveLevelToFile(true); // save progress
 
-//        String result = "You earned " + LevelManager.getInstance().points + " points!";
-//        tvResults.setText(result);
+        String result = "You earned " + LevelManager.getInstance().points + " points!";
+        tvResults.setText(result);
 
         ivBackToMain.setOnClickListener(new View.OnClickListener() {
             @Override

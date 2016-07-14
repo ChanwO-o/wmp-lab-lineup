@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import edu.uci.wmp.lineup.CSVWriter;
 import edu.uci.wmp.lineup.LevelManager;
@@ -172,16 +173,13 @@ public class Stage2 extends Fragment {
     private void toggleDebug(boolean onOff) {
         if (!onOff)
             return;
-        String msg = "RP round: " + LevelManager.getInstance().rpRoundsOrder.get(LevelManager.getInstance().round - 1) +
+        String msg = "responsechoice: " + Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1)) +
 		        "\nstimuliSequence: " + Util.iterableToString(LevelManager.getInstance().stimuliSequence) +
-                "\nfirstPartTargetSets: " + Util.iterableToString(LevelManager.getInstance().firstPartTargetSets) +
-                "\nfirstPartLureSets: " + Util.iterableToString(LevelManager.getInstance().firstPartLureSets) +
                 "\nsecondPartSequence: " + Util.iterableToString(LevelManager.getInstance().secondPartSequence) +
-//                "\nsecondPartPotentialTargets: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialTargets) +
-//                "\nsecondPartPotentialLures: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialLures) +
+                "\nsecondPartPotentialTargets: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialTargets) +
+                "\nsecondPartPotentialLures: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialLures) +
 //                "\nsecondPartPotentialDistractors: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialDistractors) +
-		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures) +
-		        "\nrpRounds: " + Util.iterableToString(LevelManager.getInstance().rpRoundsOrder);
+		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures);
         tvSecondDebug.setText(msg);
     }
 }

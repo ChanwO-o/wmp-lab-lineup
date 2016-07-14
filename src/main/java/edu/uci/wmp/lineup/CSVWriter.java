@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
+import edu.uci.wmp.lineup.fragments.Stage2;
+
 public class CSVWriter {
     private static final CSVWriter INSTANCE = new CSVWriter();
 
@@ -23,6 +25,11 @@ public class CSVWriter {
     private static final String FORMAT_TIME = "HHmmss";
     private static final String TIMESTAMP_DATE = "MM/dd/yyyy";
     private static final String TIMESTAMP_TIME = "HH:mm:ss";
+
+	private static final String BLANK = "blank";
+	private static final String NO_RESP = "noresponse";
+	private static final String CORRECT = "correct";
+	private static final String INCORRECT = "incorrect";
 
     private StringBuilder questionResponses = new StringBuilder();
 
@@ -137,15 +144,26 @@ public class CSVWriter {
         data.append(LevelManager.getInstance().nonlurespartone).append(COMMA);
         data.append(LevelManager.getInstance().lurespartone).append(COMMA);
         data.append(Util.iterableToString(LevelManager.getInstance().stimuliSequence)).append(COMMA);
-	    String respchoi = Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1)).replace(',', ' '); // responsechoice replace commas for csv format
+	    String respchoi = Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1)).replace(',', ';'); // responsechoice replace commas for csv format
         data.append(respchoi).append(COMMA);
 	    data.append(Util.iterableToString(LevelManager.getInstance().secondPartSequence)).append(COMMA);
-	    data.append(LevelManager.getInstance().response).append(COMMA);
+	    if (LevelManager.getInstance().response == Stage2.BLANK_BUTTON_TAG)
+		    data.append(BLANK).append(COMMA);
+	    else if (LevelManager.getInstance().response == Stage2.NOANSWER)
+		    data.append(NO_RESP).append(COMMA);
+	    else
+		    data.append(LevelManager.getInstance().response).append(COMMA);
         data.append(LevelManager.getInstance().presentationtimeperstimulus).append(COMMA);
         data.append(LevelManager.getInstance().presentationtimeperstimulus * LevelManager.getInstance().setsize).append(COMMA);
         data.append(LevelManager.getInstance().choicetimelimit).append(COMMA);
-        data.append(LevelManager.getInstance().reactionTime).append(COMMA);
-        data.append(LevelManager.getInstance().accuracy).append(COMMA);
+	    if (LevelManager.getInstance().reactionTime == Stage2.NOANSWER)
+            data.append(NO_RESP).append(COMMA);
+	    else
+	        data.append(LevelManager.getInstance().reactionTime).append(COMMA);
+	    if (LevelManager.getInstance().accuracy == StimuliManager.CORRECT)
+            data.append(CORRECT).append(COMMA);
+	    else if (LevelManager.getInstance().accuracy == StimuliManager.INCORRECT)
+		    data.append(INCORRECT).append(COMMA);
 
         data.append(NEW_LINE);
         writeLine(data.toString());

@@ -24,7 +24,6 @@ import edu.uci.wmp.lineup.Util;
 
 public class EffortQuestion extends Fragment {
 
-
     int questionNum = 1;
     TextView tvQuestion, tvSeekBarFirst, tvSeekBarSecond, tvSeekBarThird;
     SeekBar seekBar;
@@ -43,7 +42,7 @@ public class EffortQuestion extends Fragment {
     boolean responded;
     long responseStartTime;
     final int HIDE_TIME = 500; // hide all views
-    final int HIDE_FLICKER_TIME = 100; // short hide time for screen flickering
+    final int HIDE_FLICKER_TIME = 2000; // short hide time for screen flickering
     private Handler handler = new Handler();
 
     private Runnable response = new Runnable() {
@@ -51,10 +50,12 @@ public class EffortQuestion extends Fragment {
         public void run() {
             long current = SystemClock.uptimeMillis() - responseStartTime;
             if (current < HIDE_TIME) {
-                setViewsVisible(View.INVISIBLE);
+	            setViewsVisible(View.INVISIBLE);
                 handler.postDelayed(this, 0);
-            } else
-                setViewsVisible(View.VISIBLE);
+            } else {
+	            handler.removeCallbacks(this);
+	            setViewsVisible(View.VISIBLE);
+            }
         }
     };
 
@@ -67,8 +68,10 @@ public class EffortQuestion extends Fragment {
             long current = SystemClock.uptimeMillis();
             if (!responded && current < HIDE_FLICKER_TIME) {
                 handler.postDelayed(this, 0);
-            } else
-                setViewsVisible(View.VISIBLE);
+            } else {
+	            handler.removeCallbacks(this);
+	            setViewsVisible(View.VISIBLE);
+            }
         }
     };
 

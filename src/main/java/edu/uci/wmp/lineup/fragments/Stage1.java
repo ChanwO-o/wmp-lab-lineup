@@ -118,12 +118,10 @@ public class Stage1 extends Fragment {
     private void toggleDebug(boolean onOff) {
         if (!onOff)
             return;
-        String msg = "RP round: " + LevelManager.getInstance().rpRoundsOrder.get(LevelManager.getInstance().round - 1) +
-		        "\nstimuliSequence: " + Util.iterableToString(LevelManager.getInstance().stimuliSequence) +
+        String msg = "stimuliSequence: " + Util.iterableToString(LevelManager.getInstance().stimuliSequence) +
                 "\nfirstPartTargetSets: " + Util.iterableToString(LevelManager.getInstance().firstPartTargetSets) +
                 "\nfirstPartLureSets: " + Util.iterableToString(LevelManager.getInstance().firstPartLureSets) +
-		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures) +
-		        "\nrpRounds: " + Util.iterableToString(LevelManager.getInstance().rpRoundsOrder);
+		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures);
         tvTargetLureDebug.setText(msg);
     }
 }

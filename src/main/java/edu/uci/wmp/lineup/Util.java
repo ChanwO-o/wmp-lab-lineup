@@ -92,4 +92,14 @@ public final class Util {
             it.remove();
         return t;
     }
+
+	/**
+	 * Return true if array contains element; false otherwise
+	 */
+	public static <T> boolean arrayContains(T[] array, T element) {
+		for (T  t : array)
+			if (t.equals(element))
+				return true;
+		return false;
+	}
 }

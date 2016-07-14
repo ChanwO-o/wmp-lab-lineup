@@ -90,6 +90,42 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rlChangeTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="@dimen/gap_medium"
+                android:text="Change theme"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/white" />
+
+            <EditText
+                android:id="@+id/etChangeTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:ems="10"
+                android:inputType="numberSigned"
+                android:padding="@dimen/gap_medium"
+                android:textColor="@color/white" />
+
+            <Switch
+                android:id="@+id/swChangeTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center_horizontal"
+                android:checked="false"
+                android:padding="@dimen/gap_medium" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/rlDebugMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

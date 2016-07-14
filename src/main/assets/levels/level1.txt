@@ -6,7 +6,5 @@ choices=1
 responsechoice=[2,0];[3,1];[4,2];[1,3]
 presentationtimeperstimulus=1500
 choicetimelimit=7000
-repetitions=10
-rprounds=5
 goup=4
 godown=7

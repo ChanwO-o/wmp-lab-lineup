@@ -65,7 +65,7 @@ public class LevelManager {
     public boolean debug = false;
     public boolean testStarted = false;
     public long sessionStartMills = 0;
-	public List<Integer> rpRoundsOrder;                     // order of rp rounds and non-rp rounds
+//	public List<Integer> rpRoundsOrder;                     // order of rp rounds and non-rp rounds
 
 	/** Level file variables */
     public String theme = "geometry";
@@ -73,10 +73,10 @@ public class LevelManager {
     public int lurespartone = 0;
     public int nonlurespartone = 0;
     public int choices = 0;
-    public List<int[]> responsechoice;
+    public List<Integer[]> responsechoice;
     public int presentationtimeperstimulus = 0;             // display time in mills per stimulus
 	public int choicetimelimit = 0;                         // seconds for player to answer in stage 2
-	public int rprounds = 0;                                // number of rounds in level involving rp lures
+//	public int rprounds = 0;                                // number of rounds in level involving rp lures
 	public int goup = 1;                                    // max number of wrongs player can get to progress up a level
 	public int godown = 2;                                  // min number of wrongs player can get to move down a level
 
@@ -131,7 +131,7 @@ public class LevelManager {
         secondPartPotentialDistractors = new ArrayList<>();
 	    secondPartRPLures = new ArrayList<>();
 	    responsechoice = new ArrayList<>();
-	    rpRoundsOrder = new ArrayList<>();
+//	    rpRoundsOrder = new ArrayList<>();
     }
 
     /**
@@ -147,7 +147,7 @@ public class LevelManager {
         secondPartPotentialDistractors.clear();
 	    secondPartRPLures.clear();
 	    responsechoice.clear();
-	    rpRoundsOrder.clear();
+//	    rpRoundsOrder.clear();
 
         if (trainingmode.equals(TRAININGMODE_DEMO)) {
             loadLevel(START_LEVEL);
@@ -170,11 +170,12 @@ public class LevelManager {
      */
     public void startLevel() {
 	    responsechoice.clear();
+	    repetitions = 0;
+	    round = 1;
+	    wrongs = 0;
 	    loadLevel(level);
-        round = 1;
-        wrongs = 0;
 	    StimuliManager.getInstance().setTheme(theme);
-	    generateRPRounds();
+//	    generateRPRounds();
     }
 
     /**
@@ -333,7 +334,18 @@ public class LevelManager {
 		    String[] respArrays = newValue.split(";");
 		    for (String array : respArrays)
 		        processResponseChoiceArray(array.trim());
-		    Collections.shuffle(responsechoice);
+		    Collections.shuffle(responsechoice); // random orders
+
+		    if (Util.arrayContains(responsechoice.get(0), StimuliManager.RP_LURE_CODE)) // first trial cannot have rp lures
+		    {
+			    int indexOfNoRP = 0; // find index of an array that doesn't have rp lures, swap with first
+			    for (int i = 1; i < responsechoice.size(); ++i)
+				    if (!Util.arrayContains(responsechoice.get(i), StimuliManager.RP_LURE_CODE)) {
+					    indexOfNoRP = i;
+					    break;
+				    }
+			    Collections.swap(responsechoice, 0, indexOfNoRP);
+		    }
 		    return;
 	    }
 
@@ -382,7 +394,8 @@ public class LevelManager {
 
 	    // get first element of translatedArray, add 'sub-array' by that number of times to responsechoice
 	    int multiply = translatedArray[0];
-	    int[] theActualSequence = new int[choices];
+	    repetitions += multiply; // elements add up to repetitions in level
+	    Integer[] theActualSequence = new Integer[choices];
 	    if (translatedArray[1] == StimuliManager.RANDOM_CODE) { // randomize theActualSequence
 		    for (int i = 0; i < multiply; ++i) {
 			    responsechoice.add(generateRandomChoiceArray(choices));
@@ -417,8 +430,8 @@ public class LevelManager {
         } */
     }
 
-	private int[] generateRandomChoiceArray(int size) {
-		int[] result = new int[size];
+	private Integer[] generateRandomChoiceArray(int size) {
+		Integer[] result = new Integer[size];
 		for (int i = 0; i < size; ++i)
 			result[i] = random.nextInt(StimuliManager.RANDOM_CODE);
 		return result;
@@ -427,17 +440,17 @@ public class LevelManager {
 	/**
 	 * Generate random rp rounds leaving first round as a non-rp round
 	 */
-	private void generateRPRounds() {
-		if (repetitions < 2)
-			return; // rp rounds require at least 2 repetitions
-		rpRoundsOrder.clear();
-		for (int i = 0; i < rprounds; ++i)
-			rpRoundsOrder.add(RP_ROUND);
-		for (int i = 1; i < repetitions - rprounds; ++i) // start i at 1 to leave first round (a definite NON_RP_ROUND)
-			rpRoundsOrder.add(NON_RP_ROUND);
-		Collections.shuffle(rpRoundsOrder);
-		rpRoundsOrder.add(0, NON_RP_ROUND); // add non-rp round at first, shift shuffled rounds to the right
-	}
+//	private void generateRPRounds() {
+//		if (repetitions < 2)
+//			return; // rp rounds require at least 2 repetitions
+//		rpRoundsOrder.clear();
+//		for (int i = 0; i < rprounds; ++i)
+//			rpRoundsOrder.add(RP_ROUND);
+//		for (int i = 1; i < repetitions - rprounds; ++i) // start i at 1 to leave first round (a definite NON_RP_ROUND)
+//			rpRoundsOrder.add(NON_RP_ROUND);
+//		Collections.shuffle(rpRoundsOrder);
+//		rpRoundsOrder.add(0, NON_RP_ROUND); // add non-rp round at first, shift shuffled rounds to the right
+//	}
 
     public void generateStimuliFirstPart() {
         List<Integer> sets = new ArrayList<>(); // temporary list holding all set numbers
@@ -500,18 +513,18 @@ public class LevelManager {
 
 	    setupPotentialStructures();
 
-	    if (rpRoundsOrder.get(round - 1) == RP_ROUND) { // current round is rp round
-		    // generate 1 rp lure
-		    int randomRPLure = secondPartRPLures.get(random.nextInt(secondPartRPLures.size()));
-		    secondPartSequence.add(randomRPLure);
-
-		    // generate randoms for remaining buttons
-		    for (int i = 1; i < choices; ++i) {
-			    int randomClass = random.nextInt(StimuliManager.RANDOM_CODE);
-			    secondPartSequence.add(getStimulusFromPotentialStructure(randomClass));
-		    }
-		    return;
-	    }
+//	    if (rpRoundsOrder.get(round - 1) == RP_ROUND) { // current round is rp round
+//		    // generate 1 rp lure
+//		    int randomRPLure = secondPartRPLures.get(random.nextInt(secondPartRPLures.size()));
+//		    secondPartSequence.add(randomRPLure);
+//
+//		    // generate randoms for remaining buttons
+//		    for (int i = 1; i < choices; ++i) {
+//			    int randomClass = random.nextInt(StimuliManager.RANDOM_CODE);
+//			    secondPartSequence.add(getStimulusFromPotentialStructure(randomClass));
+//		    }
+//		    return;
+//	    }
 
 	    // current round is non-rp round
 	    for (int classNum : responsechoice.get(round - 1))
@@ -526,6 +539,8 @@ public class LevelManager {
 				return Util.chooseRandomFromIterable(secondPartPotentialLures, secondPartPotentialLures.size(), true);
 			case StimuliManager.DISTRACTOR_CODE:
 				return Util.chooseRandomFromIterable(secondPartPotentialDistractors, secondPartPotentialDistractors.size(), true);
+			case StimuliManager.RP_LURE_CODE:
+				return Util.chooseRandomFromIterable(secondPartRPLures, secondPartRPLures.size(), true);
 			default:
 				return 0;
 		}

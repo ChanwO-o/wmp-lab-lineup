@@ -42,7 +42,17 @@ public class RoundFeedback extends Fragment {
                 LevelManager.getInstance().roundsPlayedThisSession++;
                 if (LevelManager.getInstance().round == LevelManager.getInstance().repetitions) { // check if end of level
                     Log.wtf("round feedback", "round ==, end level");
-                    Util.loadFragment((AppCompatActivity) getActivity(), new LevelFeedback());
+	                if (LevelManager.getInstance().levelsPlayed == LevelManager.getInstance().sessionLevels - 1)
+	                {
+		                LevelManager.getInstance().levelsPlayed++;
+		                calculateNextLevel(); // calculate next level to be saved here since player skips through LevelFeedback
+		                if (LevelManager.getInstance().questions)
+			                Util.loadFragment((AppCompatActivity) getActivity(), new ReflectionQuestion());
+		                else
+			                Util.loadFragment((AppCompatActivity) getActivity(), new MainScreen());
+	                }
+                    else
+		                Util.loadFragment((AppCompatActivity) getActivity(), new LevelFeedback());
                 }
                 else {
                     Log.wtf("round feedback", "round ++, next round");
@@ -85,6 +95,7 @@ public class RoundFeedback extends Fragment {
         try {
             if (check()) {
                 flRoundFeedback.addView(getFace(StimuliManager.CORRECT));
+	            LevelManager.getInstance().points += LevelManager.getInstance().level; // add points
                 LevelManager.getInstance().accuracy = StimuliManager.CORRECT;
             }
             else {
@@ -105,18 +116,38 @@ public class RoundFeedback extends Fragment {
      */
     private boolean check() {
         int response = LevelManager.getInstance().response;
-        if (response == Stage2.NOANSWER)
+        if (response == Stage2.NOANSWER) // no response
             return false;
-        // check if response was in stimulisequence
-        boolean inSequence = false;
-        for (int stimFromFirst : LevelManager.getInstance().stimuliSequence) {
-            if (LevelManager.getInstance().secondPartSequence.contains(stimFromFirst)) {
-                inSequence = true;
-                break;
-            }
+	    else if (response == Stage2.BLANK_BUTTON_TAG) // user chose blank button
+        {
+	        for (int otherChoice : LevelManager.getInstance().secondPartSequence)
+		        if (LevelManager.getInstance().stimuliSequence.contains(otherChoice))
+			        return false;
         }
-        return (response == Stage2.BLANK_BUTTON_TAG && !inSequence) || (response != Stage2.BLANK_BUTTON_TAG && inSequence); // TODO: what if player clicks a lure? wrong.
+	    else // user chose a stimulus
+        {
+	        if (!LevelManager.getInstance().stimuliSequence.contains(response))
+		        return false;
+        }
+	    return true;
     }
+
+	/**
+	 * Set next level depending on number of rounds player got wrong
+	 * Called upon finishing last level in session, no level feedback is given and directs player to questions/mainscreen.
+	 */
+	private void calculateNextLevel() {
+		if (LevelManager.getInstance().wrongs <= LevelManager.getInstance().goup) {
+			Log.wtf("LEVEL_UP", "+++");
+			if (LevelManager.getInstance().level < LevelManager.MAX_LEVEL)
+				LevelManager.getInstance().level++;
+		}
+		else if (LevelManager.getInstance().wrongs >= LevelManager.getInstance().godown) {
+			Log.wtf("LEVEL_DOWN", "---");
+			if (LevelManager.getInstance().level > LevelManager.MIN_LEVEL)
+				LevelManager.getInstance().level--;
+		}
+	}
 
     private ImageView getFace(int correct) throws IOException {
         ImageView ivFace = new ImageView(getActivity());
