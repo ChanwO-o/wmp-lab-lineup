@@ -20,14 +20,16 @@ public class Settings extends Fragment {
     public static final String SUBJECT_KEY = "subject_key";
     public static final String SESSION_KEY = "session_key";
     public static final String QUESTIONS_KEY = "questions_key";
+	public static final String CHANGETHEME_KEY = "changetheme_key";
     public static final String DEBUG_KEY = "debug_key";
     public static final String TRAININGMODE_KEY = "trainingmode_key";
     public static final String ROUNDS_KEY = "rounds_key";
     public static final String SESSIONLENGTH_KEY = "sessionlength_key";
 
     LinearLayout llSettingsWidgets;
-    EditText etSubject, etSession, etRoundsTime;
-    Switch swQuestions, swDebug, swTrainingMode;
+    EditText etSubject, etSession, etChangeTheme, etRoundsTime;
+    Switch swQuestions, swChangeTheme, swDebug, swTrainingMode;
+	RelativeLayout rlChangeTheme;
     TextView tvRTPrompt, tvRTUnit;
     Button bPerformChecks;
     Button bPopulate;
@@ -51,8 +53,11 @@ public class Settings extends Fragment {
         etSubject = (EditText) view.findViewById(R.id.etSubject);
         etSession = (EditText) view.findViewById(R.id.etSession);
         swQuestions = (Switch) view.findViewById(R.id.swQuestions);
+	    swChangeTheme = (Switch) view.findViewById(R.id.swChangeTheme);
+	    etChangeTheme = (EditText) view.findViewById(R.id.etAfterXRounds);
         swDebug = (Switch) view.findViewById(R.id.swDebug);
         swTrainingMode = (Switch) view.findViewById(R.id.swTrainingMode);
+	    rlChangeTheme = (RelativeLayout) view.findViewById(R.id.rlAfterXRounds);
         tvRTPrompt = (TextView) view.findViewById(R.id.tvRTPrompt);
         etRoundsTime = (EditText) view.findViewById(R.id.etRoundsTime);
         tvRTUnit = (TextView) view.findViewById(R.id.tvRTUnit);
@@ -61,22 +66,29 @@ public class Settings extends Fragment {
         bBack = (Button) view.findViewById(R.id.bSettingsBack);
 
         // initial setup
-        swQuestions.setTextOn("On");
-        swQuestions.setTextOff("Off");
-        swDebug.setTextOn("On");
-        swDebug.setTextOff("Off");
+//        swQuestions.setTextOn("On");
+//        swQuestions.setTextOff("Off");
+//        swDebug.setTextOn("On");
+//        swDebug.setTextOff("Off");
         swTrainingMode.setTextOn("Time");
         swTrainingMode.setTextOff("Levels");
         etSubject.setText(String.valueOf(LevelManager.getInstance().subject));
         etSession.setText(String.valueOf(LevelManager.getInstance().session));
+	    etChangeTheme.setText(String.valueOf(LevelManager.getInstance().changeTheme));
 
         // set default mode of switches
         swQuestions.setChecked(LevelManager.getInstance().questions);
         swDebug.setChecked(LevelManager.getInstance().debug);
         boolean trainingModeIsTime = LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_TIME);
+	    boolean changeThemeActivated = LevelManager.getInstance().changeTheme != LevelManager.THEME_NOCHANGE;
+	    swChangeTheme.setChecked(changeThemeActivated);
         swTrainingMode.setChecked(trainingModeIsTime);
 
-        // setup RoundsTime input
+	    // setup ChangeTheme layout
+	    if (!changeThemeActivated)
+		    rlChangeTheme.setVisibility(View.GONE);
+
+        // setup RoundsTime layout
         if (trainingModeIsTime)
             setRTLayoutTime();
         else
@@ -94,6 +106,16 @@ public class Settings extends Fragment {
                 }
             }
         });
+
+	    swChangeTheme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    @Override
+		    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+			    if (isChecked)
+				    rlChangeTheme.setVisibility(View.VISIBLE);
+			    else
+				    rlChangeTheme.setVisibility(View.GONE);
+		    }
+	    });
 
         bPerformChecks.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,12 +160,14 @@ public class Settings extends Fragment {
                     else if (LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_TIME))
                         LevelManager.getInstance().sessionLength = Integer.valueOf(etRoundsTime.getText().toString());
 
-                    LevelManager.getInstance().questions = swQuestions.isChecked(); // set questions
-                    LevelManager.getInstance().debug = swDebug.isChecked(); // set debug
+                    LevelManager.getInstance().questions = swQuestions.isChecked();
+	                if (swChangeTheme.isChecked())
+	                    LevelManager.getInstance().changeTheme = Integer.valueOf(etChangeTheme.getText().toString());
+                    LevelManager.getInstance().debug = swDebug.isChecked();
                     LevelManager.getInstance().saveSharedPreferences(); // save settings variables to preferences
                     Util.loadFragment((AppCompatActivity) getActivity(), new MainScreen());
                 } catch (Exception e) {
-                    Toast.makeText(getActivity(), "Invalid inputs: Subject & session numbers must be integers", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Invalid inputs: Subject, session & trial inputs must be integers", Toast.LENGTH_SHORT).show();
                 }
             }
         });

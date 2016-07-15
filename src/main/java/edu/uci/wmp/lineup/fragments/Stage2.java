@@ -31,12 +31,12 @@ public class Stage2 extends Fragment {
     TextView tvSecondDebug;
 
     public static final int BLANK_BUTTON_TAG = -99;
+	public static final int NOANSWER = -1;
     final int BUTTONS_PER_ROW = 4;
     final double CHOICE_BUTTON_WIDTH = 0.17;
     final double CHOICE_BUTTON_HEIGHT = 0.2;
     final double CHOICE_BUTTON_MARGIN = 0.05;
     final long BLANK_SCREEN = 500;
-    public static final int NOANSWER = -1;
     long stageStartTime;
     long startBlankScreenTime;
 
@@ -157,6 +157,8 @@ public class Stage2 extends Fragment {
         if (imageLabel != BLANK_BUTTON_TAG)
             choiceButton.setImageBitmap(StimuliManager.getInstance().getStimuli(imageLabel));
         choiceButton.setLayoutParams(layoutParams);
+	    choiceButton.setBackgroundResource(R.drawable.responsebuttonshape);
+	    choiceButton.setPadding(25,25,25,25);
         choiceButton.setTag(imageLabel);
         choiceButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -49,10 +49,9 @@ public class EffortQuestion extends Fragment {
         @Override
         public void run() {
             long current = SystemClock.uptimeMillis() - responseStartTime;
-            if (current < HIDE_TIME) {
-	            setViewsVisible(View.INVISIBLE);
+            if (current < HIDE_TIME)
                 handler.postDelayed(this, 0);
-            } else {
+            else {
 	            handler.removeCallbacks(this);
 	            setViewsVisible(View.VISIBLE);
             }
@@ -130,6 +129,7 @@ public class EffortQuestion extends Fragment {
                     CSVWriter.getInstance().writeQuestionResponse();
 
                     if (questionNum == 1) {
+	                    setViewsVisible(View.INVISIBLE);
                         handler.postDelayed(response, 0);
                         setUpNextQuestion();
                     }

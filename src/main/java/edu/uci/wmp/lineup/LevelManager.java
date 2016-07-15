@@ -13,7 +13,9 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 
 import edu.uci.wmp.lineup.fragments.Settings;
@@ -39,9 +41,9 @@ public class LevelManager {
     public static final String TRAININGMODE_DEMO = "train_demo";
     private static final String SAVE_FOLDER_PATH = "/wmplab/LineUp/data/";
     public static final String SAVE_LEVEL_FILENAME = "_data.txt";
+	private static final String THEME_ORDER_FILENAME = "/wmplab/LineUp/theme_order.txt";
     public static final String SHAREDPREF_KEY = "shared_pref";
-	public static final int RP_ROUND = 1;
-	public static final int NON_RP_ROUND = 0;
+	public static final int THEME_NOCHANGE = 0;
 
     private Context context;
     private Random random;
@@ -62,10 +64,11 @@ public class LevelManager {
     public int sessionLevels = 10;
     public int sessionLength = 300;
     public boolean questions = true;
+	public int changeTheme = THEME_NOCHANGE;
+	public List<String> themeOrder;
     public boolean debug = false;
     public boolean testStarted = false;
     public long sessionStartMills = 0;
-//	public List<Integer> rpRoundsOrder;                     // order of rp rounds and non-rp rounds
 
 	/** Level file variables */
     public String theme = "geometry";
@@ -76,7 +79,6 @@ public class LevelManager {
     public List<Integer[]> responsechoice;
     public int presentationtimeperstimulus = 0;             // display time in mills per stimulus
 	public int choicetimelimit = 0;                         // seconds for player to answer in stage 2
-//	public int rprounds = 0;                                // number of rounds in level involving rp lures
 	public int goup = 1;                                    // max number of wrongs player can get to progress up a level
 	public int godown = 2;                                  // min number of wrongs player can get to move down a level
 
@@ -131,7 +133,7 @@ public class LevelManager {
         secondPartPotentialDistractors = new ArrayList<>();
 	    secondPartRPLures = new ArrayList<>();
 	    responsechoice = new ArrayList<>();
-//	    rpRoundsOrder = new ArrayList<>();
+	    themeOrder = new ArrayList<>();
     }
 
     /**
@@ -147,7 +149,6 @@ public class LevelManager {
         secondPartPotentialDistractors.clear();
 	    secondPartRPLures.clear();
 	    responsechoice.clear();
-//	    rpRoundsOrder.clear();
 
         if (trainingmode.equals(TRAININGMODE_DEMO)) {
             loadLevel(START_LEVEL);
@@ -155,6 +156,9 @@ public class LevelManager {
         }
         else
             loadSavedLevel(); // sets level variable if there is a saved instance
+
+	    if (changeTheme != THEME_NOCHANGE)
+		    readThemeOrder();
 
         sessionStartMills = SystemClock.uptimeMillis(); // record session starting time (used for trainingmode = "time")
         round = 0;
@@ -174,8 +178,13 @@ public class LevelManager {
 	    round = 1;
 	    wrongs = 0;
 	    loadLevel(level);
+	    // setting theme from level file or auto change
+	    if (changeTheme != THEME_NOCHANGE) {
+		    int index = (roundsPlayedThisSession / changeTheme) % changeTheme;
+		    theme = themeOrder.get(index);
+		    Log.wtf("theme at index " + index, "set to " + theme);
+	    }
 	    StimuliManager.getInstance().setTheme(theme);
-//	    generateRPRounds();
     }
 
     /**
@@ -189,7 +198,6 @@ public class LevelManager {
         secondPartPotentialTargets.clear();
         secondPartPotentialLures.clear();
         secondPartPotentialDistractors.clear();
-//	    loadLevel(level);
     }
 
     public void loadLevel(int level) {
@@ -266,6 +274,28 @@ public class LevelManager {
 
     }
 
+	/**
+	 * Fill themeOrder with list of themes specified in theme_order.txt in root wmp directory
+	 */
+	private void readThemeOrder() {
+		try {
+			File root = android.os.Environment.getExternalStorageDirectory();
+			BufferedReader reader = new BufferedReader(new FileReader(root.getAbsolutePath() + THEME_ORDER_FILENAME));
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				Log.d("readThemeOrder()", line);
+				themeOrder.add(line);
+			}
+		} catch (FileNotFoundException e) {
+			Log.e("readThemeOrder()", "No theme order file found");
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.e("readThemeOrder()", "Error reading theme order file");
+			e.printStackTrace();
+		}
+	}
+
     public void setContext(Context context) { this.context = context; }
 
     /**
@@ -276,7 +306,8 @@ public class LevelManager {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(Settings.SUBJECT_KEY, subject);
         editor.putInt(Settings.SESSION_KEY, session);
-        editor.putBoolean(Settings.QUESTIONS_KEY, questions);
+	    editor.putBoolean(Settings.QUESTIONS_KEY, questions);
+	    editor.putInt(Settings.CHANGETHEME_KEY, changeTheme);
         editor.putBoolean(Settings.DEBUG_KEY, debug);
         editor.putString(Settings.TRAININGMODE_KEY, trainingmode);
         editor.putInt(Settings.ROUNDS_KEY, sessionLevels);
@@ -292,6 +323,7 @@ public class LevelManager {
         subject = sharedPref.getInt(Settings.SUBJECT_KEY, 1);
         session = sharedPref.getInt(Settings.SESSION_KEY, 1);
         questions = sharedPref.getBoolean(Settings.QUESTIONS_KEY, true);
+	    changeTheme = sharedPref.getInt(Settings.CHANGETHEME_KEY, LevelManager.THEME_NOCHANGE);
         debug = sharedPref.getBoolean(Settings.DEBUG_KEY, true);
         trainingmode = sharedPref.getString(Settings.TRAININGMODE_KEY, TRAININGMODE_LEVELS);
         sessionLevels = sharedPref.getInt(Settings.ROUNDS_KEY, 10);
