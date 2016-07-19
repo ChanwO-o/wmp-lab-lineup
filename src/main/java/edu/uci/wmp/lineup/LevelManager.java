@@ -2,7 +2,6 @@ package edu.uci.wmp.lineup;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.util.Log;
@@ -13,9 +12,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Random;
 
 import edu.uci.wmp.lineup.fragments.Settings;
@@ -71,7 +68,7 @@ public class LevelManager {
     public long sessionStartMills = 0;
 
 	/** Level file variables */
-    public String theme = "geometry";
+    public String theme = StimuliManager.DEFAULT_THEME_NAME;
     public int setsize = 0;
     public int lurespartone = 0;
     public int nonlurespartone = 0;
@@ -152,7 +149,7 @@ public class LevelManager {
 
         if (trainingmode.equals(TRAININGMODE_DEMO)) {
             loadLevel(START_LEVEL);
-            sessionLevels = 3;
+            sessionLevels = DEMO_MAX_LEVELS;
         }
         else
             loadSavedLevel(); // sets level variable if there is a saved instance
@@ -178,6 +175,9 @@ public class LevelManager {
 	    round = 1;
 	    wrongs = 0;
 	    loadLevel(level);
+	    // limit to max stimuli
+	    if (setsize > StimuliManager.MAX_STIMULI_SET)
+		    setsize = StimuliManager.MAX_STIMULI_SET;
 	    // setting theme from level file or auto change
 	    if (changeTheme != THEME_NOCHANGE) {
 		    int index = (roundsPlayedThisSession / changeTheme) % changeTheme;
@@ -386,19 +386,19 @@ public class LevelManager {
         // check field type and assign correct value
         if (var.getType().getName().equals("int")) {
             var.setInt(this, Integer.valueOf(newValue));
-            Log.i("typecheck", "Integer");
+//            Log.i("typecheck", "Integer");
         }
         else if (var.getType().getName().equals("java.lang.String")) {
             var.set(this, newValue);
-            Log.i("typecheck", "String");
+//            Log.i("typecheck", "String");
         }
         else if (var.getType().getName().equals("boolean")) {
             var.setBoolean(this, newValue.equals("1"));
-            Log.i("typecheck", "Boolean");
+//            Log.i("typecheck", "Boolean");
         }
         else if (var.getType().getName().equals("double")) {
             var.setDouble(this, Double.valueOf(newValue));
-            Log.i("typecheck", "Double");
+//            Log.i("typecheck", "Double");
         }
 //        else if (var.getType().isArray() && var.getType().getComponentType().getName().equals("int")) { // checking for array of type int
 //            var.set(this, convertToIntArray(newValue));

@@ -31,12 +31,12 @@ public class StimuliManager {
 	public static final int DEFAULT_THEME_SETS = 24;
 	public static final int DEFAULT_THEME_STIMULI = 9;
     public static final int MIN_STIMULI_CHOICES = 1;
-    public static final int MAX_STIMULI_CHOICES = 12;
+	public static final int MAX_STIMULI_SET = 16;
     public static final int TARGET_CODE = 0;
     public static final int LURE_CODE = 1;
     public static final int DISTRACTOR_CODE = 2;
-	public static final int RANDOM_CODE = 3;
-	public static final int RP_LURE_CODE = 4;
+	public static final int RP_LURE_CODE = 3;
+	public static final int RANDOM_CODE = 4;
 
     private Context context;
 	private String themeName = "";

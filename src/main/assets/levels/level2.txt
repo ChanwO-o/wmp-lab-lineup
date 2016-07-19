@@ -1,9 +1,9 @@
 theme=shapes
-setsize=4
-lurespartone=1
-nonlurespartone=3
-choices=2
-responsechoice=[2,0,1];[3,1,2];[5,3]
+setsize=2
+lurespartone=0
+nonlurespartone=2
+choices=1
+responsechoice=[4,0];[4,2];[1,1]
 presentationtimeperstimulus=750
 choicetimelimit=7000
 goup=4

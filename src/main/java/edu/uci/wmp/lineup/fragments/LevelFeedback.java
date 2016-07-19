@@ -36,8 +36,6 @@ public class LevelFeedback extends Fragment implements View.OnClickListener {
     TextView tvLevelFeedbackDebug;
 
     final int LEVELFEEDBACK_SHOW_BUTTON_TIME = 1;
-    final double FACE_WIDTH = 0.5;
-    final double FACE_HEIGHT = 0.5;
     public static final int LEVEL_UP = 777;
     public static final int LEVEL_SAME = 555;
     public static final int LEVEL_DOWN = 666;
@@ -97,10 +95,11 @@ public class LevelFeedback extends Fragment implements View.OnClickListener {
     private ImageView getFace(int result) throws IOException {
         ImageView ivFace = new ImageView(getActivity());
         ivFace.setImageBitmap(StimuliManager.getInstance().getFeedbackAsset(getActivity(), result));
-        int faceWidth = Double.valueOf(LevelManager.getInstance().screenWidth * FACE_WIDTH).intValue();
-        int faceHeight = Double.valueOf(LevelManager.getInstance().screenHeight * FACE_HEIGHT).intValue();
+        int faceWidth = Double.valueOf(LevelManager.getInstance().screenWidth * RoundFeedback.FACE_WIDTH).intValue();
+        int faceHeight = Double.valueOf(LevelManager.getInstance().screenHeight * RoundFeedback.FACE_HEIGHT).intValue();
         FrameLayout.LayoutParams faceLayoutParams = new FrameLayout.LayoutParams(faceWidth, faceHeight);
         faceLayoutParams.gravity = Gravity.CENTER;
+	    faceLayoutParams.topMargin = Double.valueOf(LevelManager.getInstance().screenHeight * RoundFeedback.FACE_TOPMARGIN_PERCENTAGE).intValue();
         ivFace.setLayoutParams(faceLayoutParams);
         return ivFace;
     }

@@ -35,7 +35,8 @@ public class Stage2 extends Fragment {
     final int BUTTONS_PER_ROW = 4;
     final double CHOICE_BUTTON_WIDTH = 0.17;
     final double CHOICE_BUTTON_HEIGHT = 0.2;
-    final double CHOICE_BUTTON_MARGIN = 0.05;
+	final double CHOICE_BUTTON_MARGIN = 0.05;
+	final double CHOICE_BUTTON_PADDING = 0.02;
     final long BLANK_SCREEN = 500;
     long stageStartTime;
     long startBlankScreenTime;
@@ -158,7 +159,8 @@ public class Stage2 extends Fragment {
             choiceButton.setImageBitmap(StimuliManager.getInstance().getStimuli(imageLabel));
         choiceButton.setLayoutParams(layoutParams);
 	    choiceButton.setBackgroundResource(R.drawable.responsebuttonshape);
-	    choiceButton.setPadding(25,25,25,25);
+	    int buttonPadding = Double.valueOf(LevelManager.getInstance().screenHeight * CHOICE_BUTTON_PADDING).intValue();
+	    choiceButton.setPadding(buttonPadding,buttonPadding,buttonPadding,buttonPadding);
         choiceButton.setTag(imageLabel);
         choiceButton.setOnClickListener(new View.OnClickListener() {
             @Override

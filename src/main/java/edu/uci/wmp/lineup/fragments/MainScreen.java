@@ -79,8 +79,8 @@ public class MainScreen extends Fragment implements View.OnTouchListener {
             public void onClick(View v) {
                 LevelManager.getInstance().trainingmode = LevelManager.TRAININGMODE_DEMO; // start demo mode and play max 3 rounds
                 LevelManager.getInstance().startSession();
-//                Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
-                Util.loadFragment((AppCompatActivity) getActivity(), new ReflectionQuestion()); // used for testing questions easily
+                Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
+//                Util.loadFragment((AppCompatActivity) getActivity(), new ReflectionQuestion()); // used for testing questions easily
             }
         });
         return view;

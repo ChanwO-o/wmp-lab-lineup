@@ -82,7 +82,7 @@ public final class Util {
      * Return a random element from iterable.
      * If remove == true, remove the extracted element from the iterable
      */
-    public static <T> T chooseRandomFromIterable(Iterable<T> iterable, int size, boolean remove) { // TODO: make this work (?), use at LevelManager generateStimuliFirstPart() (commented out)
+    public static <T> T chooseRandomFromIterable(Iterable<T> iterable, int size, boolean remove) {
         int randomIndex = new Random().nextInt(size);
         Iterator<T> it = iterable.iterator();
         T t = it.next(); // start from first element

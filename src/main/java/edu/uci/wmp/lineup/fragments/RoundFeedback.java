@@ -26,9 +26,9 @@ public class RoundFeedback extends Fragment {
 
     FrameLayout flRoundFeedback;
     ImageView ivRoundFeedbackNext;
-    final double FACE_WIDTH = 0.5;
-    final double FACE_HEIGHT = 0.5;
-	final double FACE_TOPMARGIN_PERCENTAGE = 0.10;
+    static final double FACE_WIDTH = 0.5;
+    static final double FACE_HEIGHT = 0.5;
+	static final double FACE_TOPMARGIN_PERCENTAGE = 0.10;
     final long BLANK_SCREEN = 500;
     long startBlankScreenTime;
 

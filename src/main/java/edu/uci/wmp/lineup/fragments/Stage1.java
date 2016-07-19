@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -25,15 +27,22 @@ import edu.uci.wmp.lineup.Util;
 
 public class Stage1 extends Fragment {
 
-    FrameLayout flStimuliCircle;
-    FrameLayout.LayoutParams circleLayoutParams;
+    RelativeLayout rlDisplay;
+    RelativeLayout.LayoutParams firstRowLayoutParams, secondRowLayoutParams, rlStimuliLayoutParams;
+	LinearLayout llFirstRow, llSecondRow;
+	LinearLayout.LayoutParams llStimuliLayoutParams;
     TextView tvTargetLureDebug;
     Random random;
 
-    final double STIMULI_SIZE = 0.2; // 0.2 of height
+	static final int MAX_SETSIZE_CIRCLE = 8; // display stimuli in circle until 8 stimuli. otherwise in rows
+    static final double STIMULI_SIZE = 0.2; // 0.2 of height
+	static final double ROW_TOP_MARGIN = 0.33; // position rows 1/3 & 2/3 of screen height
+	static final double LEFT_RIGHT_MARGIN = 0.005; // gap between stimuli in rows
 
+	boolean circle; // circle or row, depending on setsize
     double sectorAngle;
     double cumulativeAngle;
+	int numStimuliPerRow;
     long stageStartTime;
 
     private Handler handler = new Handler();
@@ -61,12 +70,36 @@ public class Stage1 extends Fragment {
         super.onCreate(savedInstanceState);
         LevelManager.getInstance().startRound();
         LevelManager.getInstance().generateStimuliFirstPart();
-        int circleStimuliSide = Double.valueOf(LevelManager.getInstance().screenHeight * STIMULI_SIZE).intValue();
-        circleLayoutParams = new FrameLayout.LayoutParams(circleStimuliSide, circleStimuliSide);
-        circleLayoutParams.gravity = Gravity.CENTER;
-        random = new Random();
-        sectorAngle = 360.00 / LevelManager.getInstance().setsize;
-        cumulativeAngle = Double.valueOf(random.nextInt(360)).intValue(); // random starting point
+
+	    int stimuliSideLength = Double.valueOf(LevelManager.getInstance().screenHeight * STIMULI_SIZE).intValue();
+	    circle = LevelManager.getInstance().setsize <= MAX_SETSIZE_CIRCLE;
+
+	    if (circle) { // circle
+		    rlStimuliLayoutParams = new RelativeLayout.LayoutParams(stimuliSideLength, stimuliSideLength); // layoutparams for circle stimuli
+		    rlStimuliLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+		    rlStimuliLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+		    random = new Random();
+		    sectorAngle = 360.00 / LevelManager.getInstance().setsize;
+		    cumulativeAngle = Double.valueOf(random.nextInt(360)).intValue(); // random starting point
+	    }
+	    else { // 2 rows
+		    llStimuliLayoutParams = new LinearLayout.LayoutParams(stimuliSideLength, stimuliSideLength); // layoutparams for row stimuli
+		    int stimLeftRightMargin = Double.valueOf(LevelManager.getInstance().screenWidth * LEFT_RIGHT_MARGIN).intValue();
+		    llStimuliLayoutParams.setMargins(stimLeftRightMargin, 0, stimLeftRightMargin, 0);
+		    numStimuliPerRow = (LevelManager.getInstance().setsize + 1) / 2;
+		    llFirstRow = new LinearLayout(getActivity());
+		    llSecondRow = new LinearLayout(getActivity());
+		    firstRowLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		    secondRowLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		    int topMargin = Double.valueOf(LevelManager.getInstance().screenHeight * ROW_TOP_MARGIN).intValue();
+		    firstRowLayoutParams.setMargins(0, topMargin, 0, 0);
+		    secondRowLayoutParams.setMargins(0, topMargin * 2, 0, 0);
+		    firstRowLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+		    secondRowLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+
+		    llFirstRow.setLayoutParams(firstRowLayoutParams);
+		    llSecondRow.setLayoutParams(secondRowLayoutParams);
+	    }
         stageStartTime = SystemClock.uptimeMillis();
     }
 
@@ -74,20 +107,35 @@ public class Stage1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stage1, container, false);
 
-        flStimuliCircle = (FrameLayout) view.findViewById(R.id.flStimuliCircle);
+	    rlDisplay = (RelativeLayout) view.findViewById(R.id.rlStimuliDisplay);
         tvTargetLureDebug = (TextView) view.findViewById(R.id.tvTargetLureDebug);
 
-        for (int labeledStimulus : LevelManager.getInstance().stimuliSequence) // Adding images around circle
-        {
-//            Log.i("Stimulus", "" + labeledStimulus);
-            try {
-                flStimuliCircle.addView(createTargetImageView(labeledStimulus));
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            cumulativeAngle += sectorAngle; // rotate around center, adds up to 360
-        }
+	    // add stimuli to circle/rows
+	    int sequenceLength = LevelManager.getInstance().stimuliSequence.size();
+	    try {
+		    for (int i = 1; i <= sequenceLength; ++i)
+		    {
+//              Log.i("Stimulus", "" + labeledStimulus);
+			    int labeledStimulus = LevelManager.getInstance().stimuliSequence.get(i - 1);
+			    if (circle) {
+				    rlDisplay.addView(createTargetCircleImageView(labeledStimulus));
+				    cumulativeAngle += sectorAngle; // rotate around center, adds up to 360
+			    }
+			    else {
+				    if (i <= numStimuliPerRow)
+					    llFirstRow.addView(createTargetRowImageView(labeledStimulus));
+				    else
+					    llSecondRow.addView(createTargetRowImageView(labeledStimulus));
+			    }
+		    }
+	    } catch (IOException e) {
+		    e.printStackTrace();
+	    }
+
+	    if (!circle) {
+		    rlDisplay.addView(llFirstRow);
+		    rlDisplay.addView(llSecondRow);
+	    }
         toggleDebug(LevelManager.getInstance().debug);
         handler.postDelayed(nextStage, 0);
         return view;
@@ -99,21 +147,28 @@ public class Stage1 extends Fragment {
         super.onPause();
     }
 
-    private ImageView createTargetImageView(int labeledStimulus) throws IOException {
-        ImageView ivStimuli = new ImageView(getActivity()); // create imageview object for each stimulus
-        ivStimuli.setImageBitmap(StimuliManager.getInstance().getStimuli(labeledStimulus));
-        ivStimuli.setLayoutParams(circleLayoutParams);
+	private ImageView createTargetCircleImageView(int labeledStimulus) throws IOException {
+		ImageView ivStimuli = new ImageView(getActivity()); // create imageview object for each stimulus
+		ivStimuli.setImageBitmap(StimuliManager.getInstance().getStimuli(labeledStimulus));
+		ivStimuli.setLayoutParams(rlStimuliLayoutParams);
 
 //        Log.i("Cumulative angle", "" + cumulativeAngle);
-        double radians = cumulativeAngle * 0.0174533;
-        float xTrans = 300 * (float) Math.sin(radians); // apply angle
-        float yTrans = (-1) * 300 * (float) Math.cos(radians);
+		double radians = cumulativeAngle * 0.0174533;
+		float xTrans = 300 * (float) Math.sin(radians); // apply angle
+		float yTrans = (-1) * 300 * (float) Math.cos(radians);
 //        Log.i("X trans", "" + xTrans);
 //        Log.i("Y trans", "" + yTrans);
-        ivStimuli.setTranslationX(xTrans); // apply translation away from center
-        ivStimuli.setTranslationY(yTrans);
-        return ivStimuli;
-    }
+		ivStimuli.setTranslationX(xTrans); // apply translation away from center
+		ivStimuli.setTranslationY(yTrans);
+		return ivStimuli;
+	}
+
+	private ImageView createTargetRowImageView(int labeledStimulus) throws IOException {
+		ImageView ivStimuli = new ImageView(getActivity());
+		ivStimuli.setImageBitmap(StimuliManager.getInstance().getStimuli(labeledStimulus));
+		ivStimuli.setLayoutParams(llStimuliLayoutParams);
+		return ivStimuli;
+	}
 
     private void toggleDebug(boolean onOff) {
         if (!onOff)
