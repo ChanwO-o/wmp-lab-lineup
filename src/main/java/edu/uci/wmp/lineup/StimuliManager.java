@@ -26,7 +26,8 @@ public class StimuliManager {
 
     public static final int CORRECT = 1;
     public static final int INCORRECT = -1;
-    public static final String MISC = "miscellaneous/";
+	public static final String WMP_STIMULI_PATH = "/wmplab/LineUp/stimuli/";
+	public static final String MISC = "miscellaneous/";
 	public static final String DEFAULT_THEME_NAME = "shapes";
 	public static final int DEFAULT_THEME_SETS = 24;
 	public static final int DEFAULT_THEME_STIMULI = 9;
@@ -92,7 +93,7 @@ public class StimuliManager {
     public String getImagePath(int labeledFileName) {
         int picNum = labeledFileName % 100;
         int setNum = (labeledFileName - (picNum)) / 100;
-        return "/wmplab/LineUp/stimuli/" + themeName + "/set" + setNum + "/" + picNum + ".png";
+        return WMP_STIMULI_PATH + themeName + "/set" + setNum + "/" + picNum + ".png";
     }
 
 	/**
@@ -100,10 +101,8 @@ public class StimuliManager {
 	 * Configure number of sets in theme & number of stimuli in each set
 	 */
 	public void setTheme(String theme) {
-		String stimPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/wmplab/LineUp/stimuli/";
-		File themeFolder = new File(stimPath + theme);
-		// set theme name
-		if (themeFolder.exists())
+		String stimPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + WMP_STIMULI_PATH;
+		if (hasTheme(theme))
 			themeName = theme;
 		else {
 			Log.i("theme does not exist", "set to default theme");
@@ -118,6 +117,12 @@ public class StimuliManager {
 
 		Log.d("numberOfSetsInTheme", "" + numberOfSetsInTheme);
 		Log.d("numberOfPicturesInSet", "" + numberOfPicturesInSet);
+	}
+
+	public static boolean hasTheme(String theme) {
+		String stimPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + WMP_STIMULI_PATH;
+		File themeFolder = new File(stimPath + theme);
+		return themeFolder.exists();
 	}
 
     public static StimuliManager getInstance() { return INSTANCE; }

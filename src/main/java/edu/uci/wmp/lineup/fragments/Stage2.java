@@ -40,6 +40,7 @@ public class Stage2 extends Fragment {
     final long BLANK_SCREEN = 500;
     long stageStartTime;
     long startBlankScreenTime;
+	boolean responded;
 
     private Handler handler = new Handler();
 
@@ -82,6 +83,7 @@ public class Stage2 extends Fragment {
         super.onCreate(savedInstanceState);
         LevelManager.getInstance().generateStimuliSecondPart();
         stageStartTime = SystemClock.uptimeMillis();
+	    responded = false;
     }
 
     @Override
@@ -165,10 +167,13 @@ public class Stage2 extends Fragment {
         choiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LevelManager.getInstance().response = (int) choiceButton.getTag(); // submit answer
-                LevelManager.getInstance().reactionTime = SystemClock.uptimeMillis() - stageStartTime;
-                startBlankScreenTime = SystemClock.uptimeMillis();
-                handler.postDelayed(blankScreen, 0);
+	            if (!responded) {
+		            responded = true;
+		            LevelManager.getInstance().response = (int) choiceButton.getTag(); // submit answer
+		            LevelManager.getInstance().reactionTime = SystemClock.uptimeMillis() - stageStartTime;
+		            startBlankScreenTime = SystemClock.uptimeMillis();
+		            handler.postDelayed(blankScreen, 0);
+	            }
             }
         });
         return choiceButton;
@@ -177,13 +182,14 @@ public class Stage2 extends Fragment {
     private void toggleDebug(boolean onOff) {
         if (!onOff)
             return;
-        String msg = "responsechoice: " + Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1)) +
-		        "\nstimuliSequence: " + Util.iterableToString(LevelManager.getInstance().stimuliSequence) +
+        String msg = "stimuliSequence: " + Util.iterableToString(LevelManager.getInstance().stimuliSequence) +
                 "\nsecondPartSequence: " + Util.iterableToString(LevelManager.getInstance().secondPartSequence) +
-                "\nsecondPartPotentialTargets: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialTargets) +
-                "\nsecondPartPotentialLures: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialLures) +
+//                "\nsecondPartPotentialTargets: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialTargets) +
+//                "\nsecondPartPotentialLures: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialLures) +
 //                "\nsecondPartPotentialDistractors: " + Util.iterableToString(LevelManager.getInstance().secondPartPotentialDistractors) +
-		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures);
-        tvSecondDebug.setText(msg);
+		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures) +
+		        "\nresponsechoice: " + Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1));
+
+	    tvSecondDebug.setText(msg);
     }
 }

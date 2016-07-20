@@ -139,6 +139,7 @@ public class CSVWriter {
 
         data.append(LevelManager.getInstance().session).append(COMMA);
         data.append(LevelManager.getInstance().level).append(COMMA);
+	    data.append(LevelManager.getInstance().round).append(COMMA);
         data.append(LevelManager.getInstance().theme).append(COMMA);
         data.append(LevelManager.getInstance().setsize).append(COMMA);
         data.append(LevelManager.getInstance().nonlurespartone).append(COMMA);

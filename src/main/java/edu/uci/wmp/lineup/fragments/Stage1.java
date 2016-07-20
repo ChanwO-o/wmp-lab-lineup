@@ -176,7 +176,8 @@ public class Stage1 extends Fragment {
         String msg = "stimuliSequence: " + Util.iterableToString(LevelManager.getInstance().stimuliSequence) +
                 "\nfirstPartTargetSets: " + Util.iterableToString(LevelManager.getInstance().firstPartTargetSets) +
                 "\nfirstPartLureSets: " + Util.iterableToString(LevelManager.getInstance().firstPartLureSets) +
-		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures);
+		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures) +
+		        "\nresponsechoice: " + Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1));
         tvTargetLureDebug.setText(msg);
     }
 }

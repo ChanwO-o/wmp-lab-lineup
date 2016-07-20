@@ -3,6 +3,7 @@ version
 subject
 session
 level
+trial
 theme
 setsize
 part1 nonlures

@@ -285,7 +285,8 @@ public class LevelManager {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				Log.d("readThemeOrder()", line);
-				themeOrder.add(line);
+				if (StimuliManager.hasTheme(line))
+					themeOrder.add(line);
 			}
 		} catch (FileNotFoundException e) {
 			Log.e("readThemeOrder()", "No theme order file found");

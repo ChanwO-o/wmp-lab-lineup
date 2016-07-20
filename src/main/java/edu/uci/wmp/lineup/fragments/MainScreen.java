@@ -14,9 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.uci.wmp.lineup.LevelManager;
 import edu.uci.wmp.lineup.R;
+import edu.uci.wmp.lineup.StimuliManager;
 import edu.uci.wmp.lineup.Util;
 
 /**
@@ -79,8 +81,8 @@ public class MainScreen extends Fragment implements View.OnTouchListener {
             public void onClick(View v) {
                 LevelManager.getInstance().trainingmode = LevelManager.TRAININGMODE_DEMO; // start demo mode and play max 3 rounds
                 LevelManager.getInstance().startSession();
-                Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
-//                Util.loadFragment((AppCompatActivity) getActivity(), new ReflectionQuestion()); // used for testing questions easily
+//                Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
+                Util.loadFragment((AppCompatActivity) getActivity(), new ReflectionQuestion()); // used for testing questions easily
             }
         });
         return view;
