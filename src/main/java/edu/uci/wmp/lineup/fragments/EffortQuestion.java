@@ -209,7 +209,7 @@ public class EffortQuestion extends Fragment {
 			@Override
 			public void run() {
 				seekBarLayoutParams = (RelativeLayout.LayoutParams) seekBar.getLayoutParams();
-				seekBarLayoutParams.width = (int) getResources().getDimension(R.dimen.seekbar_width);//Double.valueOf(LevelManager.getInstance().screenWidth * SEEKBAR_WIDTH).intValue();
+				seekBarLayoutParams.width = (int) getResources().getDimension(R.dimen.seekbar_width); // Double.valueOf(LevelManager.getInstance().screenWidth * SEEKBAR_WIDTH).intValue();
 				seekBarLayoutParams.topMargin = llEffortImages.getHeight() - (seekBar.getHeight() / 2) - Double.valueOf(tvSeekBarFirst.getHeight() * 0.25).intValue();
 				int pad = (int) getResources().getDimension(R.dimen.seekbar_padding_width);
 				seekBar.setPadding(pad, 0, pad, 0);

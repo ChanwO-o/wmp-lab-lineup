@@ -4,6 +4,7 @@ package edu.uci.wmp.lineup.fragments;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -162,7 +163,9 @@ public class Settings extends Fragment {
 
                     LevelManager.getInstance().questions = swQuestions.isChecked();
 	                if (swChangeTheme.isChecked())
-	                    LevelManager.getInstance().changeTheme = Integer.valueOf(etChangeTheme.getText().toString());
+		                LevelManager.getInstance().changeTheme = Integer.valueOf(etChangeTheme.getText().toString());
+	                else
+		                LevelManager.getInstance().changeTheme = LevelManager.THEME_NOCHANGE;
                     LevelManager.getInstance().debug = swDebug.isChecked();
                     LevelManager.getInstance().saveSharedPreferences(); // save settings variables to preferences
                     Util.loadFragment((AppCompatActivity) getActivity(), new MainScreen());

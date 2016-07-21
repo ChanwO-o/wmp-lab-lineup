@@ -8,8 +8,8 @@ android {
         applicationId "edu.uci.wmp.lineup"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 14
-        versionName "0.14"
+        versionCode 15
+        versionName "0.15"
     }
     buildTypes {
         release {

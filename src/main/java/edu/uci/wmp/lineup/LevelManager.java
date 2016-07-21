@@ -7,6 +7,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -156,6 +157,7 @@ public class LevelManager {
 
 	    if (changeTheme != THEME_NOCHANGE)
 		    readThemeOrder();
+//	    Toast.makeText(context, "themeorder:" + Util.iterableToString(themeOrder), Toast.LENGTH_SHORT).show();
 
         sessionStartMills = SystemClock.uptimeMillis(); // record session starting time (used for trainingmode = "time")
         round = 0;
@@ -179,12 +181,7 @@ public class LevelManager {
 	    if (setsize > StimuliManager.MAX_STIMULI_SET)
 		    setsize = StimuliManager.MAX_STIMULI_SET;
 	    // setting theme from level file or auto change
-	    if (changeTheme != THEME_NOCHANGE) {
-		    int index = (roundsPlayedThisSession / changeTheme) % changeTheme;
-		    theme = themeOrder.get(index);
-		    Log.wtf("theme at index " + index, "set to " + theme);
-	    }
-	    StimuliManager.getInstance().setTheme(theme);
+	    StimuliManager.getInstance().applyTheme();
     }
 
     /**

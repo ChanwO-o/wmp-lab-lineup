@@ -8,6 +8,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -40,7 +41,6 @@ public class StimuliManager {
 	public static final int RANDOM_CODE = 4;
 
     private Context context;
-	private String themeName = "";
 
 	public int numberOfSetsInTheme;
 	public int numberOfPicturesInSet;
@@ -93,26 +93,30 @@ public class StimuliManager {
     public String getImagePath(int labeledFileName) {
         int picNum = labeledFileName % 100;
         int setNum = (labeledFileName - (picNum)) / 100;
-        return WMP_STIMULI_PATH + themeName + "/set" + setNum + "/" + picNum + ".png";
+        return WMP_STIMULI_PATH + LevelManager.getInstance().theme + "/set" + setNum + "/" + picNum + ".png";
     }
 
 	/**
-	 * Check if given theme exists, set theme to default if not
+	 * Check if theme exists, set theme to default if not
+	 * If changeTheme is on, calculate theme order index
 	 * Configure number of sets in theme & number of stimuli in each set
 	 */
-	public void setTheme(String theme) {
+	public void applyTheme() {
+		if (LevelManager.getInstance().changeTheme != LevelManager.THEME_NOCHANGE) {
+			int index = (LevelManager.getInstance().levelsPlayed / LevelManager.getInstance().changeTheme) % LevelManager.getInstance().themeOrder.size();
+			LevelManager.getInstance().theme = LevelManager.getInstance().themeOrder.get(index);
+			Log.wtf("theme at index " + index, "set to " + LevelManager.getInstance().theme);
+		}
 		String stimPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + WMP_STIMULI_PATH;
-		if (hasTheme(theme))
-			themeName = theme;
-		else {
+		if (!hasTheme(LevelManager.getInstance().theme)) {
 			Log.i("theme does not exist", "set to default theme");
-			themeName = DEFAULT_THEME_NAME;
+			LevelManager.getInstance().theme = DEFAULT_THEME_NAME;
 		}
 
 		// set @numberOfSetsInTheme & @numberOfPicturesInSet
-		File temp = new File(stimPath + themeName);
+		File temp = new File(stimPath + LevelManager.getInstance().theme);
 		numberOfSetsInTheme = temp.list().length;
-		temp = new File(stimPath + themeName + "/set1");
+		temp = new File(stimPath + LevelManager.getInstance().theme + "/set1");
 		numberOfPicturesInSet = temp.list().length;
 
 		Log.d("numberOfSetsInTheme", "" + numberOfSetsInTheme);
