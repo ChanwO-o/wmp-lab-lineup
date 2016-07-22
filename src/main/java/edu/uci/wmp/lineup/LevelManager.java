@@ -157,7 +157,6 @@ public class LevelManager {
 
 	    if (changeTheme != THEME_NOCHANGE)
 		    readThemeOrder();
-//	    Toast.makeText(context, "themeorder:" + Util.iterableToString(themeOrder), Toast.LENGTH_SHORT).show();
 
         sessionStartMills = SystemClock.uptimeMillis(); // record session starting time (used for trainingmode = "time")
         round = 0;

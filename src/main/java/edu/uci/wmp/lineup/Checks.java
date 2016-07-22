@@ -188,6 +188,7 @@ public class Checks {
 	    defaultThemeFolder.mkdirs();
 
         try {
+	        // fill sets
             String[] setPaths = new String[StimuliManager.DEFAULT_THEME_SETS];
             for (int i = 1; i <= StimuliManager.DEFAULT_THEME_SETS; ++i) {
 	            setPaths[i - 1] = "set" + i + "/";
@@ -198,6 +199,11 @@ public class Checks {
 	            Log.i("populateStimuliDir()", "folder " + setFolderPath + setFolder.mkdirs());
                 copyDirectory("stimuli/" + StimuliManager.DEFAULT_THEME_NAME + "/" + set, setFolderPath);
             }
+	        // copy background
+	        File backgroundFile = new File(defaultThemeFolderPath, StimuliManager.BACKGROUND_FILENAME);
+	        InputStream is = context.getAssets().open("stimuli/" + StimuliManager.DEFAULT_THEME_NAME + "/" + StimuliManager.BACKGROUND_FILENAME);
+	        OutputStream os = new FileOutputStream(backgroundFile);
+	        copyFile(is, os);
         }
         catch (IOException e) { e.printStackTrace(); throw new InvalidStimuliFilesException(); }
     }
@@ -215,11 +221,7 @@ public class Checks {
             in = am.open(assetFolderPath + filename);
             File outFile = new File(outFolderPath, filename);
             out = new FileOutputStream(outFile);
-
             copyFile(in, out);
-            in.close();
-            out.flush();
-            out.close();
         }
     }
 
@@ -229,7 +231,9 @@ public class Checks {
         while((read = in.read(buffer)) != -1){
             out.write(buffer, 0, read);
         }
-
+	    in.close();
+	    out.flush();
+	    out.close();
     }
 
     public static Checks getInstance() {

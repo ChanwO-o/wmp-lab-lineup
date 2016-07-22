@@ -3,10 +3,12 @@ package edu.uci.wmp.lineup;
 /**
  * TODO:
  */
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ public class StimuliManager {
     public static final int INCORRECT = -1;
 	public static final String WMP_STIMULI_PATH = "/wmplab/LineUp/stimuli/";
 	public static final String MISC = "miscellaneous/";
+	public static final String BACKGROUND_FILENAME = "background.jpeg";
 	public static final String DEFAULT_THEME_NAME = "shapes";
 	public static final int DEFAULT_THEME_SETS = 24;
 	public static final int DEFAULT_THEME_STIMULI = 9;
@@ -61,6 +64,11 @@ public class StimuliManager {
         return BitmapFactory.decodeStream(is);
     }
 
+	public Drawable getBackground() throws IOException {
+		String path = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + WMP_STIMULI_PATH + LevelManager.getInstance().theme + "/" + BACKGROUND_FILENAME;
+		return Drawable.createFromPath(path);
+	}
+
     public Bitmap getFeedbackAsset(Context context, int result) throws IOException {
         AssetManager assetManager = context.getAssets();
         InputStream is = null;
@@ -82,10 +90,6 @@ public class StimuliManager {
         return BitmapFactory.decodeStream(is);
     }
 
-//    public String getImagePath(String folder, int filename) { // DELETE THIS, JUST FOR REMOVING ERRORS FOR RUNNING
-//        return "stimuli/" + folder + filename + ".png";
-//    }
-
     public String getImagePath(String theme, String set, int filename) {
         return "stimuli/" + theme + set + filename + ".png";
     }
@@ -100,6 +104,7 @@ public class StimuliManager {
 	 * Check if theme exists, set theme to default if not
 	 * If changeTheme is on, calculate theme order index
 	 * Configure number of sets in theme & number of stimuli in each set
+	 * Set activity background image to theme background
 	 */
 	public void applyTheme() {
 		if (LevelManager.getInstance().changeTheme != LevelManager.THEME_NOCHANGE) {
@@ -115,12 +120,24 @@ public class StimuliManager {
 
 		// set @numberOfSetsInTheme & @numberOfPicturesInSet
 		File temp = new File(stimPath + LevelManager.getInstance().theme);
-		numberOfSetsInTheme = temp.list().length;
+		numberOfSetsInTheme = temp.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				return file.isDirectory();
+			}
+		}).length;
 		temp = new File(stimPath + LevelManager.getInstance().theme + "/set1");
 		numberOfPicturesInSet = temp.list().length;
 
 		Log.d("numberOfSetsInTheme", "" + numberOfSetsInTheme);
 		Log.d("numberOfPicturesInSet", "" + numberOfPicturesInSet);
+
+		// set theme background
+		try {
+			((Activity) context).findViewById(R.id.fragment_container).setBackground(getBackground());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static boolean hasTheme(String theme) {

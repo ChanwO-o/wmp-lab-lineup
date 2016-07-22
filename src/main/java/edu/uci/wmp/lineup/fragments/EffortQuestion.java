@@ -35,7 +35,7 @@ public class EffortQuestion extends Fragment {
     ImageView ivEffortFirst, ivEffortSecond, ivEffortThird, ivNext;
     View[] hiddenViews;
 
-	static final double SEEKBAR_WIDTH = 0.75;
+	static final double SEEKBAR_WIDTH = 0.9;
     final double IMAGE_WIDTH_PERCENTAGE = 0.50;
     final double IMAGE_HEIGHT_PERCENTAGE = 0.50;
 
@@ -209,7 +209,7 @@ public class EffortQuestion extends Fragment {
 			@Override
 			public void run() {
 				seekBarLayoutParams = (RelativeLayout.LayoutParams) seekBar.getLayoutParams();
-				seekBarLayoutParams.width = (int) getResources().getDimension(R.dimen.seekbar_width); // Double.valueOf(LevelManager.getInstance().screenWidth * SEEKBAR_WIDTH).intValue();
+				seekBarLayoutParams.width = Double.valueOf(LevelManager.getInstance().screenWidth * SEEKBAR_WIDTH).intValue();
 				seekBarLayoutParams.topMargin = llEffortImages.getHeight() - (seekBar.getHeight() / 2) - Double.valueOf(tvSeekBarFirst.getHeight() * 0.25).intValue();
 				int pad = (int) getResources().getDimension(R.dimen.seekbar_padding_width);
 				seekBar.setPadding(pad, 0, pad, 0);
@@ -223,8 +223,8 @@ public class EffortQuestion extends Fragment {
 				RelativeLayout.LayoutParams newRlLayoutParams = new RelativeLayout.LayoutParams(newRlWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
 				newRlLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, seekBar.getId());
 				newRlLayoutParams.addRule(RelativeLayout.BELOW, tvQuestion.getId());
-				int theTinyGapBetweenWhiteLabelBarAndSeekbar = Double.valueOf(v0.getHeight() * 0.25).intValue();
-				newRlLayoutParams.topMargin = (int) getResources().getDimension(R.dimen.gap_huge) - theTinyGapBetweenWhiteLabelBarAndSeekbar;
+				int theTinyGapBetweenWhiteLabelBarAndSeekbar = Double.valueOf(v0.getHeight() * 0.22).intValue();
+				newRlLayoutParams.topMargin = seekBarLayoutParams.topMargin + seekBarLayoutParams.height - theTinyGapBetweenWhiteLabelBarAndSeekbar; //getResources().getDimension(R.dimen.gap_huge) - theTinyGapBetweenWhiteLabelBarAndSeekbar;
 				newRlLayoutParams.leftMargin = (int) getResources().getDimension(R.dimen.seekbar_padding_width) - v0.getWidth() / 2;
 				rlSeekBarLabels.setLayoutParams(newRlLayoutParams);
 
