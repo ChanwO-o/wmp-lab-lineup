@@ -35,6 +35,7 @@ public class Stage1 extends Fragment {
     Random random;
 
 	static final int MAX_SETSIZE_CIRCLE = 8; // display stimuli in circle until 8 stimuli. otherwise in rows
+	static final double RADIUS_PERCENTAGE = 0.4; // 0.4 of screen height
     static final double STIMULI_SIZE = 0.2; // 0.2 of height
 	static final double ROW_TOP_MARGIN = 0.33; // position rows 1/3 & 2/3 of screen height
 	static final double LEFT_RIGHT_MARGIN = 0.005; // gap between stimuli in rows
@@ -68,6 +69,8 @@ public class Stage1 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//	    LevelManager.getInstance().part = LevelManager.STAGE1;
+//	    Util.setActivityBackground(getContext()); // set to theme background
         LevelManager.getInstance().startRound();
         LevelManager.getInstance().generateStimuliFirstPart();
 
@@ -154,8 +157,9 @@ public class Stage1 extends Fragment {
 
 //        Log.i("Cumulative angle", "" + cumulativeAngle);
 		double radians = cumulativeAngle * 0.0174533;
-		float xTrans = 300 * (float) Math.sin(radians); // apply angle
-		float yTrans = (-1) * 300 * (float) Math.cos(radians);
+		int radius = Double.valueOf(LevelManager.getInstance().screenHeight * RADIUS_PERCENTAGE).intValue();
+		float xTrans = radius * (float) Math.sin(radians); // apply angle
+		float yTrans = (-1) * radius * (float) Math.cos(radians);
 //        Log.i("X trans", "" + xTrans);
 //        Log.i("Y trans", "" + yTrans);
 		ivStimuli.setTranslationX(xTrans); // apply translation away from center
@@ -177,7 +181,8 @@ public class Stage1 extends Fragment {
                 "\nfirstPartTargetSets: " + Util.iterableToString(LevelManager.getInstance().firstPartTargetSets) +
                 "\nfirstPartLureSets: " + Util.iterableToString(LevelManager.getInstance().firstPartLureSets) +
 		        "\nsecondPartRPLures: " + Util.iterableToString(LevelManager.getInstance().secondPartRPLures) +
-		        "\nresponsechoice: " + Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1));
+		        "\nresponsechoice: " + Arrays.toString(LevelManager.getInstance().responsechoice.get(LevelManager.getInstance().round - 1)) +
+	            "\nthemeIndex: " + LevelManager.getInstance().themeIndex;
         tvTargetLureDebug.setText(msg);
     }
 }

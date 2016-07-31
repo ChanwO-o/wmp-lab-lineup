@@ -81,6 +81,7 @@ public class Stage2 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//	    LevelManager.getInstance().part = LevelManager.STAGE2;
         LevelManager.getInstance().generateStimuliSecondPart();
         stageStartTime = SystemClock.uptimeMillis();
 	    responded = false;

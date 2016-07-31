@@ -68,6 +68,8 @@ public class GetReady extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+	    LevelManager.getInstance().part = LevelManager.GETREADY;
+	    Util.setActivityBackground(getContext()); // set to theme background
         if (LevelManager.getInstance() != null) {
             LevelManager.getInstance().startLevel();
             LevelManager.getInstance().logVariables();
@@ -101,8 +103,8 @@ public class GetReady extends Fragment implements View.OnClickListener {
             return;
         String msg = "sessionLevels: " + LevelManager.getInstance().sessionLevels +
                 "\nrepetitions: " + LevelManager.getInstance().repetitions +
-                "\ncurrent round: " + LevelManager.getInstance().round +
-                "\nrounds left: " + (LevelManager.getInstance().repetitions - LevelManager.getInstance().round);
+                "\ncurrent trial: " + LevelManager.getInstance().round +
+                "\ntrials left: " + (LevelManager.getInstance().repetitions - LevelManager.getInstance().round);
         tvLevelRoundDebug.setText(msg);
 //        Log.d("sessionLevels", "" + LevelManager.getInstance().sessionLevels);
 //        Log.d("repetitions", "" + LevelManager.getInstance().repetitions);

@@ -10,15 +10,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Checks {
     private static final Checks INSTANCE = new Checks();
 
     public static final String LEVELFOLDER_PATH = "/wmplab/LineUp/levels/";
-    public static final String STIMULIFOLDER_PATH = "/wmplab/LineUp/stimuli/";
+	public static final String STIMULIFOLDER_PATH = "/wmplab/LineUp/stimuli/";
+	public static final String FEEDBACKFOLDER_PATH = "/wmplab/LineUp/feedback/";
     public static final String STIMULI_THEME1_PATH = "/wmplab/LineUp/stimuli/" + StimuliManager.DEFAULT_THEME_NAME + "/";
+
+	static final String[] feedbackFiles = new String[] {"roundfeedback_down.txt", "roundfeedback_same.txt", "roundfeedback_up.txt"};
 
     private StringBuilder errorMessages = new StringBuilder();
     private Context context;
@@ -26,7 +31,8 @@ public class Checks {
     public Checks() { }
 
     public class InvalidLevelFilesException extends IOException {}
-    public class InvalidStimuliFilesException extends IOException {}
+	public class InvalidStimuliFilesException extends IOException {}
+	public class InvalidFeedbackFilesException extends IOException {}
 
     public void setContext(Context context) { getInstance().context = context; }
 
@@ -50,6 +56,15 @@ public class Checks {
             checkPass = false;
         }
         errorMessages.setLength(0);
+
+	    try { Checks.getInstance().checkFeedbackDirectory(); }
+	    catch (Checks.InvalidFeedbackFilesException e) {
+		    Toast.makeText(getInstance().context, "Error checking feedback files", Toast.LENGTH_SHORT).show();
+		    Toast.makeText(getInstance().context, errorMessages.toString(), Toast.LENGTH_SHORT).show();
+		    checkPass = false;
+	    }
+	    errorMessages.setLength(0);
+
         return checkPass;
     }
 
@@ -58,8 +73,10 @@ public class Checks {
      */
     public boolean populateAssets() {
         try {
+//	        populateFoldersAndThemeOrder();
             populateLevelDirectory();
             populateStimuliDirectory();
+	        populateFeedbackDirectory();
             return true;
         }
         catch (Checks.InvalidLevelFilesException e) {
@@ -67,8 +84,12 @@ public class Checks {
             return false;
         }
         catch (Checks.InvalidStimuliFilesException e) {
-            Toast.makeText(getInstance().context, "Error populating stimuli files", Toast.LENGTH_SHORT).show();
-            return false;
+	        Toast.makeText(getInstance().context, "Error populating stimuli files", Toast.LENGTH_SHORT).show();
+	        return false;
+        }
+        catch (Checks.InvalidFeedbackFilesException e) {
+	        Toast.makeText(getInstance().context, "Error populating feedback files", Toast.LENGTH_SHORT).show();
+	        return false;
         }
     }
 
@@ -171,6 +192,31 @@ public class Checks {
             throw new InvalidStimuliFilesException();
     }
 
+	/**
+	 * Checks feedback directory for missing files
+	 * Append missing file names or directories to error message queue
+	 */
+	public void checkFeedbackDirectory() throws InvalidFeedbackFilesException {
+		File root = android.os.Environment.getExternalStorageDirectory();
+		String outFeedbackFolderPath = root.getAbsolutePath() + FEEDBACKFOLDER_PATH;
+		File outFeedbackFolder = new File(outFeedbackFolderPath);
+
+		if (!outFeedbackFolder.exists()) {
+			Log.e("checkFeedbackDir()", "Feedback Folder does not exist");
+			errorMessages.append("Feedback folder does not exist\n");
+			throw new InvalidFeedbackFilesException();
+		}
+		List<String> existingFeedbacks = Arrays.asList(outFeedbackFolder.list());
+		for (String fname : feedbackFiles) {
+			if (!existingFeedbacks.contains(fname)) {
+				String missingMsg = fname + " is missing\n";
+				errorMessages.append(missingMsg);
+			}
+		}
+		if (errorMessages.length() != 0)
+			throw new InvalidFeedbackFilesException();
+	}
+
     public void populateLevelDirectory() throws InvalidLevelFilesException {
         File root = android.os.Environment.getExternalStorageDirectory();
         String outLevelFolderPath = root.getAbsolutePath() + LEVELFOLDER_PATH;
@@ -207,6 +253,16 @@ public class Checks {
         }
         catch (IOException e) { e.printStackTrace(); throw new InvalidStimuliFilesException(); }
     }
+
+	public void populateFeedbackDirectory() throws InvalidFeedbackFilesException {
+		File root = android.os.Environment.getExternalStorageDirectory();
+		String outFeedbackFolderPath = root.getAbsolutePath() + FEEDBACKFOLDER_PATH;
+		File outFeedbackFolder = new File(outFeedbackFolderPath);
+		outFeedbackFolder.mkdirs();
+
+		try { copyDirectory("feedback/", outFeedbackFolderPath); }
+		catch (IOException e) { throw new InvalidFeedbackFilesException(); }
+	}
 
     private void copyDirectory(String assetFolderPath, String outFolderPath) throws IOException {
 	    Log.i("copyDirectory()", assetFolderPath + " -> " + outFolderPath);

@@ -6,9 +6,12 @@ package edu.uci.wmp.lineup;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import edu.uci.wmp.lineup.fragments.LevelFeedback;
 
@@ -64,9 +68,71 @@ public class StimuliManager {
         return BitmapFactory.decodeStream(is);
     }
 
+	/**
+	 * Scale down and return bitmap to fit screen, prevent OutOfMemoryError
+	 */
 	public Drawable getBackground() throws IOException {
-		String path = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + WMP_STIMULI_PATH + LevelManager.getInstance().theme + "/" + BACKGROUND_FILENAME;
-		return Drawable.createFromPath(path);
+		int part = LevelManager.getInstance().part;
+		int reqWidth = LevelManager.getInstance().screenWidth;
+		int reqHeight = LevelManager.getInstance().screenHeight;
+		Bitmap bitmap;
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true; // First decode with inJustDecodeBounds=true to check dimensions
+		switch (part) {
+			case LevelManager.MAINSCREEN:
+				BitmapFactory.decodeResource(context.getResources(), R.drawable.mainscreen_lineup, options);
+				options = getBitOptionsForDecodingSampleBitmap(options, reqWidth, reqHeight);
+				bitmap =  BitmapFactory.decodeResource(context.getResources(), R.drawable.mainscreen_lineup, options);
+				break;
+//				return ResourcesCompat.getDrawable(context.getResources(), R.drawable.mainscreen_lineup, null);
+			case LevelManager.GETREADY: // GAME
+				String path = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + WMP_STIMULI_PATH + LevelManager.getInstance().theme + "/" + BACKGROUND_FILENAME;
+				File backgroundFile = new File(path);
+				if (backgroundFile.exists()) {
+					BitmapFactory.decodeFile(path, options);
+					options = getBitOptionsForDecodingSampleBitmap(options, reqWidth, reqHeight);
+					bitmap = BitmapFactory.decodeFile(path, options);
+				}
+				else { // some themes may not have background file; in this case, load default background
+					BitmapFactory.decodeResource(context.getResources(), R.drawable.background, options);
+					options = getBitOptionsForDecodingSampleBitmap(options, reqWidth, reqHeight);
+					bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background, options);
+				}
+				break;
+//				return Drawable.createFromPath(path);
+			default:
+				BitmapFactory.decodeResource(context.getResources(), R.drawable.background, options);
+				options = getBitOptionsForDecodingSampleBitmap(options, reqWidth, reqHeight);
+				bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background, options);
+//				return ResourcesCompat.getDrawable(context.getResources(), R.drawable.background, null);
+		}
+//		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+		return new BitmapDrawable(context.getResources(), Bitmap.createScaledBitmap(bitmap, LevelManager.getInstance().screenWidth, LevelManager.getInstance().screenHeight, true));
+	}
+
+	private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+
+		if (height > reqHeight || width > reqWidth) {
+			final int halfHeight = height / 2;
+			final int halfWidth = width / 2;
+			// Calculate the largest inSampleSize value that is a power of 2 and keeps both
+			// height and width larger than the requested height and width.
+			while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth)
+				inSampleSize *= 2;
+		}
+		return inSampleSize;
+	}
+
+	private BitmapFactory.Options getBitOptionsForDecodingSampleBitmap(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		// Calculate inSampleSize
+		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+		// Decode bitmap with inSampleSize set
+		options.inJustDecodeBounds = false;
+		return options;
 	}
 
     public Bitmap getFeedbackAsset(Context context, int result) throws IOException {
@@ -99,46 +165,6 @@ public class StimuliManager {
         int setNum = (labeledFileName - (picNum)) / 100;
         return WMP_STIMULI_PATH + LevelManager.getInstance().theme + "/set" + setNum + "/" + picNum + ".png";
     }
-
-	/**
-	 * Check if theme exists, set theme to default if not
-	 * If changeTheme is on, calculate theme order index
-	 * Configure number of sets in theme & number of stimuli in each set
-	 * Set activity background image to theme background
-	 */
-	public void applyTheme() {
-		if (LevelManager.getInstance().changeTheme != LevelManager.THEME_NOCHANGE) {
-			int index = (LevelManager.getInstance().levelsPlayed / LevelManager.getInstance().changeTheme) % LevelManager.getInstance().themeOrder.size();
-			LevelManager.getInstance().theme = LevelManager.getInstance().themeOrder.get(index);
-			Log.wtf("theme at index " + index, "set to " + LevelManager.getInstance().theme);
-		}
-		String stimPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + WMP_STIMULI_PATH;
-		if (!hasTheme(LevelManager.getInstance().theme)) {
-			Log.i("theme does not exist", "set to default theme");
-			LevelManager.getInstance().theme = DEFAULT_THEME_NAME;
-		}
-
-		// set @numberOfSetsInTheme & @numberOfPicturesInSet
-		File temp = new File(stimPath + LevelManager.getInstance().theme);
-		numberOfSetsInTheme = temp.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File file) {
-				return file.isDirectory();
-			}
-		}).length;
-		temp = new File(stimPath + LevelManager.getInstance().theme + "/set1");
-		numberOfPicturesInSet = temp.list().length;
-
-		Log.d("numberOfSetsInTheme", "" + numberOfSetsInTheme);
-		Log.d("numberOfPicturesInSet", "" + numberOfPicturesInSet);
-
-		// set theme background
-		try {
-			((Activity) context).findViewById(R.id.fragment_container).setBackground(getBackground());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public static boolean hasTheme(String theme) {
 		String stimPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + WMP_STIMULI_PATH;

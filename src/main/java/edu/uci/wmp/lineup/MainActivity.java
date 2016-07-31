@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         if (LevelManager.getInstance().testStarted && !LevelManager.getInstance().trainingmode.equals(LevelManager.TRAININGMODE_DEMO)) {
             LevelManager.getInstance().saveLevelToFile(false);
             Log.wtf("Activity onPause()", "You aborted the test!");
+	        LevelManager.getInstance().testStarted = false;
             finish(); // quit entire session, user must restart game
         }
     }

@@ -147,7 +147,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center_horizontal"
                 android:padding="@dimen/gap_tiny"
-                android:text=" levels"
+                android:text=" rounds"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/white" />
 

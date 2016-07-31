@@ -67,6 +67,8 @@ public class ReflectionQuestion extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		LevelManager.getInstance().part = LevelManager.STAGE0;
+	    Util.setActivityBackground(getActivity());
     }
 
     @Override

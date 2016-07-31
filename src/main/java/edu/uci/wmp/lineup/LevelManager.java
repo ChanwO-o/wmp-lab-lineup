@@ -1,5 +1,6 @@
 package edu.uci.wmp.lineup;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -28,12 +29,14 @@ public class LevelManager {
 
     /** Constants */
     public static final int MIN_LEVEL = 1;
-    public static final int MAX_LEVEL = 10;
+    public static final int MAX_LEVEL = 20;
     public static final int START_LEVEL = 1;
     public static final int DEMO_MAX_LEVELS = 3;            // demo mode plays only 3 levels
-    public static final int STAGE1 = 1;                     // stage 1
-    public static final int STAGE2 = 2;                     // stage 2
-    public static final int STAGE0 = 0;                     // neither
+	public static final int MAINSCREEN = 0;                 // stage 1
+	public static final int GETREADY = 1;                   // get ready
+//	public static final int STAGE1 = 1;                     // stage 1
+//    public static final int STAGE2 = 2;                     // stage 2
+    public static final int STAGE0 = -1;                    // neither
     public static final String TRAININGMODE_LEVELS = "train_levels";
     public static final String TRAININGMODE_TIME = "train_time";
     public static final String TRAININGMODE_DEMO = "train_demo";
@@ -55,6 +58,7 @@ public class LevelManager {
     public int levelsPlayed = 0;                            // cumulative number of levels played; if == sessionLevels: end game
 	public int repetitions = 3;                             // number of rounds to play for current level
     public int round = 1;                                   // current round out of repetitions; if == repetitions: load next level
+	public int part = STAGE0;
     public int roundsPlayedThisSession = 0;                 // equivalent of 'current index'
     public int wrongs = 0;                                  // number of rounds answered wrong out of repetitions; reset to 0 upon start of new level
     public int points = 0;
@@ -64,6 +68,8 @@ public class LevelManager {
     public boolean questions = true;
 	public int changeTheme = THEME_NOCHANGE;
 	public List<String> themeOrder;
+	public int themeIndex = 0;
+	boolean themeIsLoaded;
     public boolean debug = false;
     public boolean testStarted = false;
     public long sessionStartMills = 0;
@@ -101,6 +107,7 @@ public class LevelManager {
         random = new Random();
         level = START_LEVEL;
         round = 0;
+	    part = STAGE0;
         reset();
     }
 
@@ -180,7 +187,7 @@ public class LevelManager {
 	    if (setsize > StimuliManager.MAX_STIMULI_SET)
 		    setsize = StimuliManager.MAX_STIMULI_SET;
 	    // setting theme from level file or auto change
-	    StimuliManager.getInstance().applyTheme();
+	    applyTheme();
     }
 
     /**
@@ -225,8 +232,14 @@ public class LevelManager {
             File root = android.os.Environment.getExternalStorageDirectory();
             BufferedReader reader = new BufferedReader(new FileReader(root.getAbsolutePath() + SAVE_FOLDER_PATH + subject + SAVE_LEVEL_FILENAME));
             String savedLevel = reader.readLine();
+	        Log.i("loadSavedLevel()", "Loaded level " + savedLevel);
+	        String savedThemeIndex = reader.readLine();
             level = Integer.valueOf(savedLevel);
-            Log.i("loadSavedLevel()", "Loaded level " + savedLevel);
+	        if (savedThemeIndex != null) {
+		        themeIndex = Integer.valueOf(savedThemeIndex);
+		        themeIsLoaded = true;
+		        Log.i("loadSavedLevel()", "Loaded theme index " + themeIndex);
+	        }
         } catch (FileNotFoundException e) {
             Log.e("loadSavedLevel()", "No save file found, setting to level " + START_LEVEL);
             level = START_LEVEL;
@@ -263,11 +276,12 @@ public class LevelManager {
             }
             Log.i("saveLevelToFile()", "Saved on level " + level);
             writer.newLine();
+	        Log.i("saveLevelToFile()", "Saved on theme index " + themeIndex);
+	        writer.write(Integer.toString(themeIndex)); // theme order index
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 	/**
@@ -290,7 +304,52 @@ public class LevelManager {
 		} catch (IOException e) {
 			Log.e("readThemeOrder()", "Error reading theme order file");
 			e.printStackTrace();
+		} finally {
+			if (themeOrder.isEmpty()) {
+				Log.i("readThemeOrder()", "themeOrder empty; adding default");
+				themeOrder.add(StimuliManager.DEFAULT_THEME_NAME);
+			}
 		}
+	}
+
+	/**
+	 * Check if theme exists, set theme to default if not
+	 * If changeTheme is on, calculate theme order index
+	 * Configure number of sets in theme & number of stimuli in each set
+	 * Set activity background image to theme background
+	 */
+	public void applyTheme() {
+		if (changeTheme != THEME_NOCHANGE) {
+			Log.wtf("ct", changeTheme + "");
+			Log.wtf("to size", themeOrder.size() + "");
+			if (!themeIsLoaded) {
+				themeIndex = (levelsPlayed / changeTheme) % themeOrder.size(); // calculate index of theme from list
+			}
+			themeIsLoaded = false;
+			theme = themeOrder.get(themeIndex);
+			Log.wtf("theme at index " + themeIndex, "set to " + theme);
+		}
+		String stimPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + StimuliManager.WMP_STIMULI_PATH;
+		if (!StimuliManager.hasTheme(theme)) {
+			Log.i("theme does not exist", "set to default theme");
+			theme = StimuliManager.DEFAULT_THEME_NAME;
+		}
+
+		// set @numberOfSetsInTheme & @numberOfPicturesInSet
+		File temp = new File(stimPath + theme);
+		StimuliManager.getInstance().numberOfSetsInTheme = temp.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				return file.isDirectory();
+			}
+		}).length;
+		temp = new File(stimPath + theme + "/set1");
+		StimuliManager.getInstance().numberOfPicturesInSet = temp.list().length;
+
+		Log.d("numberOfSetsInTheme", "" + StimuliManager.getInstance().numberOfSetsInTheme);
+		Log.d("numberOfPicturesInSet", "" + StimuliManager.getInstance().numberOfPicturesInSet);
+
+		Util.setActivityBackground(context);
 	}
 
     public void setContext(Context context) { this.context = context; }

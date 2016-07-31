@@ -43,7 +43,8 @@ public class Settings extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+	    LevelManager.getInstance().part = LevelManager.STAGE0;
+	    Util.setActivityBackground(getContext()); // set back to default background
     }
 
     @Override
@@ -178,7 +179,7 @@ public class Settings extends Fragment {
     }
 
     public void setRTLayoutLevels() {
-        tvRTPrompt.setText("Levels");
+        tvRTPrompt.setText("Rounds");
         etRoundsTime.setText(String.valueOf(LevelManager.getInstance().sessionLevels));
         tvRTUnit.setText("");
     }

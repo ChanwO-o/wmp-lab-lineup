@@ -26,7 +26,6 @@ import edu.uci.wmp.lineup.Util;
  */
 public class MainScreen extends Fragment implements View.OnTouchListener {
 
-    TextView tvLineUp;
     ImageView ivStart;
     ImageView ivDemo;
     MyRect topLeft, topRight, bottomLeft, bottomRight;
@@ -54,16 +53,15 @@ public class MainScreen extends Fragment implements View.OnTouchListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+	    LevelManager.getInstance().part = LevelManager.MAINSCREEN;
+	    Util.setActivityBackground(getContext()); // set to mainscreen
+
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         view.setOnTouchListener(this);
 
-        tvLineUp = (TextView) view.findViewById(R.id.tvAnimalSpan);
         ivStart = (ImageView) view.findViewById(R.id.ivStart);
         ivDemo = (ImageView) view.findViewById(R.id.ivDemo);
-
-        // set text font
-        Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "fonts/azoft-sans.ttf");
-        tvLineUp.setTypeface(tf);
 
         ivStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,8 +79,8 @@ public class MainScreen extends Fragment implements View.OnTouchListener {
             public void onClick(View v) {
                 LevelManager.getInstance().trainingmode = LevelManager.TRAININGMODE_DEMO; // start demo mode and play max 3 rounds
                 LevelManager.getInstance().startSession();
-//                Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
-                Util.loadFragment((AppCompatActivity) getActivity(), new ReflectionQuestion()); // used for testing questions easily
+                Util.loadFragment((AppCompatActivity) getActivity(), new GetReady());
+//                Util.loadFragment((AppCompatActivity) getActivity(), new ReflectionQuestion()); // used for testing questions easily
             }
         });
         return view;

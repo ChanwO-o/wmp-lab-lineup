@@ -1,11 +1,14 @@
 package edu.uci.wmp.lineup;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -101,5 +104,16 @@ public final class Util {
 			if (t.equals(element))
 				return true;
 		return false;
+	}
+
+	/**
+	 * Set activity background to match current theme, or reset to default background
+	 */
+	public static void setActivityBackground(Context context) {
+		try {
+			((Activity) context).findViewById(R.id.fragment_container).setBackground(StimuliManager.getInstance().getBackground());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
